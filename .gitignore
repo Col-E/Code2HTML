@@ -2,21 +2,10 @@
 .recommenders/**
 .settings/**
 bin/**
-temp/**
 target/**
-plugins/**
-**/psd/**
-*.class
-*.dtd
-*.sh
-*.bat
-*.lnk
 
 .classpath
 .project
-links.txt
-rclog.txt
-rc_*
 
 # IntelliJ IDEA Project stuff
 .idea/
@@ -24,4 +13,3 @@ out/
 *.iws
 *.iml
 *___jb_*___
-/target/
