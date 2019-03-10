@@ -227,7 +227,7 @@ public class Java2Html extends Application {
 		SplitPane vert = new SplitPane(pane, browser);
 		vert.setOrientation(Orientation.VERTICAL);
 		Scene scene = new Scene(vert, 900, 800);
-		scene.getStylesheets().add("./gui.css");
+		scene.getStylesheets().add("gui.css");
 		stage.setScene(scene);
 		stage.setTitle("Java2Html");
 		stage.show();
