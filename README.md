@@ -10,7 +10,7 @@ The CSS and _optional JS_ are available in the other tabs in the top-right.
 * **JS**: Optional JS for manual inclusion of collapse-sections.
 * **Configuration**: List of Regex groups. If you want to add your own expressions, the option is there. Doing so will automatically generate a CSS entry for your expression's identifying name.
 
-While the JS is not necessary it allows you to make portions of the code collapseable. For examples see [here](https://col-e.github.io/Recaf/plugins-ex-mwscan.html). 
+While the JS is not necessary it allows you to make portions of the code collapseable.
 
 ## Download
 
