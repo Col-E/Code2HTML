@@ -1,0 +1,24 @@
+/* Labels have margins of about 13px */
+.tab-large { -fx-pref-width: 123px; }
+.tab-large > .tab-container > .tab-label {
+	-fx-alignment: CENTER;
+	-fx-pref-width: 110px;
+	-fx-text-fill: -fx-text-base-color;
+}
+.tab-small { -fx-pref-width: 73px; }
+.tab-small > .tab-container > .tab-label {
+	-fx-alignment: CENTER;
+	-fx-pref-width: 60px;
+	-fx-text-fill: -fx-text-base-color;
+}
+.title {
+	-fx-font-family: Arial;
+	-fx-font-weight: bold;
+}
+.pattern {
+	-fx-font-family: monospace;
+}
+.button {
+	-fx-pref-width: 120px;
+	-fx-padding: 5px;
+}
