@@ -5,8 +5,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.GridPane;
 import me.coley.j2h.regex.RegexRule;
 
-import static org.apache.commons.text.StringEscapeUtils.escapeJava;
-
 /**
  * ListCell for displaying RegexRules.
  *
@@ -22,7 +20,6 @@ public final class RegexCell extends ListCell<RegexRule> {
 		} else {
 			GridPane grid = new GridPane();
 			Label lblName = new Label(item.getRawName() + "   ");
-			//Label lblPattern = new Label(escapeJava(item.getPattern()));
 			Label lblPattern = new Label(escape(item.getPattern()));
 			lblName.getStyleClass().add("title");
 			lblPattern.getStyleClass().add("pattern");
