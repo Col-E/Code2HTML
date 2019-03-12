@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration>
+    <language name="Java">
+        <rule name="keywords">
+            <pattern>\b(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|extends|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|try|var|void|volatile|while)\b</pattern>
+        </rule>
+        <rule name="strings">
+            <pattern>\"([^"\\]|\\.)+\"</pattern>
+        </rule>
+        <rule name="constant">
+            <pattern>(0[xX][0-9a-fA-F]+)+|(\b([\d._]*[\d])\b)+|(true|false|null)</pattern>
+        </rule>
+        <rule name="annotation">
+            <pattern>\B(@[\w]+)\b</pattern>
+        </rule>
+        <rule name="single-line-comment">
+            <pattern>//[^\n]+</pattern>
+        </rule>
+        <rule name="multi-line-comment">
+            <pattern>/[*](.|\n|\n)+?\*/</pattern>
+        </rule>
+        <rule name="javadoc-comment">
+            <pattern>/[*]{2}(.|\n|\n)+?\*/</pattern>
+        </rule>
+        <themes>
+            <theme name="clean">
+                <style targetRule="keywords" key="color" value="rgb(127, 0, 85)" />
+                <style targetRule="keywords" key="font-weight" value="bold" />
+                <style targetRule="strings" key="color" value="rgb(47, 100, 31)" />
+                <style targetRule="strings" key="font-weight" value="italic" />
+                <style targetRule="constant" key="color" value="rgb(173, 53, 0)" />
+                <style targetRule="annotation" key="color" value="rgb(120, 130, 150)" />
+                <style targetRule="single-line-comment" key="color" value="rgb(0, 111, 12)" />
+                <style targetRule="single-line-comment" key="font-style" value="italic" />
+                <style targetRule="multi-line-comment" key="color" value="rgb(0, 111, 12)" />
+                <style targetRule="multi-line-comment" key="font-style" value="italic" />
+                <style targetRule="javadoc-comment" key="color" value="rgb(0, 100, 114)" />
+                <style targetRule="javadoc-comment" key="font-style" value="italic" />
+            </theme>
+        </themes>
+    </language>
+</configuration>

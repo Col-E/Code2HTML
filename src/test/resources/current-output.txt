@@ -1,0 +1,4 @@
+<pre><span class="line"></span><span class="keyword">class</span> Example { 
+<span class="line"></span>    <span class="comment-line">// put source code here</span>
+<span class="line"></span>}
+</pre>

@@ -15,14 +15,23 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import jregex.Matcher;
 import jregex.Pattern;
-import me.coley.j2h.regex.ListRule;
+import me.coley.j2h.loader.Importer;
+import me.coley.j2h.modle.Configuration;
+import me.coley.j2h.modle.Language;
+import me.coley.j2h.modle.Rule;
+import me.coley.j2h.modle.Theme;
 import me.coley.j2h.regex.PatternHelper;
 import me.coley.j2h.regex.RegexRule;
 import me.coley.j2h.ui.RegexCell;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.validation.ValidationSupport;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -59,8 +68,14 @@ public class Java2Html extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		// Setup initial regular expressions
-		initRegex();
+		try {
+			// Setup initial regular expressions
+			initRegex();
+		} catch (JAXBException | IOException e) {
+			// In time configuration loading issues need to be displayed
+			// in the UI as a helpful error message.
+			e.printStackTrace();
+		}
 		// Inputs
 		txtInput.setText("class Example { \n\t// put source code here\n}");
 		txtInput.setFont(Font.font("monospace"));
@@ -237,38 +252,15 @@ public class Java2Html extends Application {
 	/**
 	 * Add regex rules for matching code.
 	 */
-	private void initRegex() {
-		// define regex
-		RegexRule keywords = new ListRule("keyword", new String[]{"abstract", "assert", "boolean",
-				"break", "byte", "case", "catch", "char", "class", "const", "continue", "default",
-				"do", "double", "else", "enum", "extends", "final", "finally", "float", "for",
-				"goto", "if", "implements", "import", "instanceof", "int", "interface", "long",
-				"native", "new", "package", "private", "protected", "public", "return", "short",
-				"static", "strictfp", "super", "switch", "synchronized", "this", "throw",
-				"throws", "transient", "try", "var", "void", "volatile", "while"});
-		RegexRule strings = new RegexRule("string", "\"([^\"\\\\]|\\\\.)+\"");
-		RegexRule cmtDoc = new RegexRule("comment-javadoc", "/[*]{2}(.|\n|\n)+?\\*/");
-		RegexRule cmtMul = new RegexRule("comment-multi", "/[*](.|\n|\n)+?\\*/");
-		RegexRule cmtLin = new RegexRule("comment-line", "//[^\n]+");
-		RegexRule annotation = new RegexRule("annotation", "\\B(@[\\w]+)\\b");
-		String hex = "(0[xX][0-9a-fA-F]+)+|(\\b([\\d._]*[\\d])\\b)+";
-		String key = "(true|false|null)";
-		RegexRule constant = new RegexRule("constant", hex + "|" + key);
-		// style
-		keywords.getStyle().put("color", "rgb(127, 0, 85)");
-		keywords.getStyle().put("font-weight", "bold");
-		strings.getStyle().put("color", "rgb(47, 100, 31)");
-		strings.getStyle().put("font-style", "italic");
-		constant.getStyle().put("color", "rgb(173, 53, 0)");
-		annotation.getStyle().put("color", "rgb(120, 130, 150)");
-		cmtLin.getStyle().put("color", "rgb(0, 111, 12)");
-		cmtLin.getStyle().put("font-style", "italic");
-		cmtMul.getStyle().put("color", "rgb(0, 111, 12)");
-		cmtMul.getStyle().put("font-style", "italic");
-		cmtDoc.getStyle().put("color", "rgb(0, 100, 114)");
-		cmtDoc.getStyle().put("font-style", "italic");
-		// add
-		helper.addRules(keywords, strings, cmtDoc, cmtMul, cmtLin, annotation, constant);
+	private void initRegex() throws JAXBException, IOException {
+		Configuration configuration = Importer.importDefaultConfiguration();
+		Language java = configuration.findLanguageByNames("Java");
+		Theme theme = java.getThemes().get(0);
+		for (Rule rule : java.getRules()) {
+			RegexRule regexRule = new RegexRule(rule.getName(), rule.getPattern());
+			regexRule.addStyle(theme.getStylesForTargetByName(rule.getName()));
+			helper.addRule(regexRule);
+		}
 	}
 
 	private void update() {
