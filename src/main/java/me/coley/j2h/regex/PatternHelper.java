@@ -3,9 +3,6 @@ package me.coley.j2h.regex;
 import jregex.Matcher;
 import jregex.Pattern;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.*;
 
 /**
@@ -13,11 +10,8 @@ import java.util.*;
  *
  * @author Matt
  */
-@XmlRootElement
 public class PatternHelper {
 
-	@XmlElementWrapper(name = "rules")
-	@XmlElement(name = "rule")
 	private final List<RegexRule> rules = new ArrayList<>();
 
 	/**
