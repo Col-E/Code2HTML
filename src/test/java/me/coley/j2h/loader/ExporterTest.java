@@ -7,8 +7,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.IOException;
 
-public class Export {
 
+public class ExporterTest {
+
+    // Test not intended as a Unit test - hits  system out.
     // Current demo code for reference ready for when the UI has export button.
     public static void main(String[] args) throws JAXBException, IOException {
         // create JAXB context and instantiate marshaller
@@ -20,4 +22,5 @@ public class Export {
         // Write to System.out
         m.marshal(Importer.importDefaultConfiguration(), System.out);
     }
+
 }

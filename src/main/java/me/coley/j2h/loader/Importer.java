@@ -29,20 +29,4 @@ public final class Importer {
         return new String(encoded, encoding);
     }
 
-    // For testing Importer only.
-    public static void main(String[] args) throws JAXBException, IOException {
-        Configuration configuration = Importer.importDefaultConfiguration();
-        for(Language lang : configuration.getLanguages()){
-            System.out.println("Language: " + lang.getName());
-            System.out.println("Rules:");
-            for(Rule searchRule : lang.getRules()){
-                System.out.println("- " + searchRule.getName() + ": " + searchRule.getPattern());
-            }
-            for(Theme theme : lang.getThemes()){
-                System.out.println("Theme: " + theme.getName());
-                for(StyleRule sr : theme.getStyles())
-                    System.out.println("- " + sr.getKey() + ": " + sr.getValue());
-            }
-        }
-    }
 }
