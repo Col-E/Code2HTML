@@ -5,8 +5,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.GridPane;
 import me.coley.j2h.regex.RegexRule;
 
-import static org.apache.commons.text.StringEscapeUtils.escapeJava;
-
 /**
  * ListCell for displaying RegexRules.
  *
