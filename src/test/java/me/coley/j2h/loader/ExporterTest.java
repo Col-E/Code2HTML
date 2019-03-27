@@ -1,27 +1,44 @@
 package me.coley.j2h.loader;
 
+import me.coley.j2h.config.Exporter;
 import me.coley.j2h.config.Importer;
 import me.coley.j2h.config.model.Configuration;
+import org.junit.Before;
+import org.junit.Test;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import java.io.IOException;
+
+import static org.junit.Assert.*;
 
 
 public class ExporterTest {
 
-    // Test not intended as a Unit test - hits  system out.
-    // Current demo code for reference ready for when the UI has export button.
-    public static void main(String[] args) throws JAXBException, IOException {
-        // create JAXB context and instantiate marshaller
-        JAXBContext context = JAXBContext.newInstance(Configuration.class);
-        Marshaller m = context.createMarshaller();
+	private Configuration configuration;
 
-        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+	@Before
+	public void setup() {
+		try {
+			// Its bad practice to require disk resources in tests, but until somebody gets around
+			// to mocking a model configuration, its good enough.
+			// If it fails, good to catch it here anyways.
+			configuration = Importer.importDefault();
+		} catch(JAXBException e) {
+			fail("setup: JAXBException" + e.getMessage());
+		} catch(IOException e) {
+			fail("setup: IOException" + e.getMessage());
+		}
+	}
 
-        // Write to System.out
-        m.marshal(Importer.importDefault(), System.out);
-    }
-
+	@Test
+	public void testExport() {
+		try {
+			String confStr = Exporter.toString(configuration);
+			assertNotNull(confStr);
+			Configuration copy = Importer.importFromText(confStr);
+			assertArrayEquals(configuration.getLanguages().toArray(), copy.getLanguages().toArray());
+		} catch(JAXBException e) {
+			fail("testExport: JAXBException" + e.getMessage());
+		}
+	}
 }
