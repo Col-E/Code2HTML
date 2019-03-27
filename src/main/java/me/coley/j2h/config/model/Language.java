@@ -1,5 +1,6 @@
 package me.coley.j2h.config.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.*;
@@ -12,6 +13,7 @@ import java.util.List;
  *
  * @author Geoff Hayward
  */
+@EqualsAndHashCode
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Language {
 	/**

@@ -31,10 +31,26 @@ public final class Importer {
 	 * @throws IOException
 	 * 		Thrown if the file could not be read from.
 	 */
-	public static Configuration importFrom(String path) throws JAXBException, IOException {
+	public static Configuration importFromFile(String path) throws JAXBException, IOException {
 		JAXBContext context = JAXBContext.newInstance(Configuration.class);
 		Unmarshaller um = context.createUnmarshaller();
 		return (Configuration) um.unmarshal(new StringReader(readFile(path, UTF_8)));
+	}
+
+	/**
+	 * @param text
+	 * 		Raw text of the configuration
+	 *
+	 * @return Configuration instance from the text.
+	 *
+	 * @throws JAXBException
+	 * 		Thrown if JAXBContext failed to initialize.<br>
+	 * 		This typically means the file is formatted incorrectly.
+	 */
+	public static Configuration importFromText(String text) throws JAXBException {
+		JAXBContext context = JAXBContext.newInstance(Configuration.class);
+		Unmarshaller um = context.createUnmarshaller();
+		return (Configuration) um.unmarshal(new StringReader(text));
 	}
 
 	/**
@@ -50,7 +66,7 @@ public final class Importer {
 		ClassLoader classloader = Importer.class.getClassLoader();
 		String uri = classloader.getResource(DEFAULT_CONF).toExternalForm();
 		Path path = Paths.get(URI.create(uri));
-		return importFrom(path.toString());
+		return importFromFile(path.toString());
 	}
 
 	/**
