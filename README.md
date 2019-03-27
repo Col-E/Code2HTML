@@ -1,6 +1,6 @@
 # Java2HTML
 
-JavaFX app for converting java to HTML. Paste source code into the top-left panel and the HTML will show in the top-right, with a preview at the bottom.
+A JavaFX app for converting java to HTML. Paste source code into the top-left panel and the HTML will show in the top-right, with a preview at the bottom.
 The CSS and _optional JS_ are available in the other tabs in the top-right.
 
 ### Top-Left tabs:
@@ -27,3 +27,4 @@ See the [releases](https://github.com/Col-E/Java2HTML/releases) page for the lat
 * [Apache Commons Text](https://commons.apache.org/proper/commons-text/)
 * [ControlsFX](https://github.com/controlsfx/controlsfx)
 * [JRegex](http://jregex.sourceforge.net/)
+* [Lombok](https://projectlombok.org/)
