@@ -1,5 +1,7 @@
 package me.coley.j2h.config.model;
 
+import lombok.Getter;
+
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +11,23 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Language {
-
+	/**
+	 * Rules for matching against language features.
+	 */
+	@Getter
 	@XmlElement(name = "rule")
 	private List<Rule> rules = new ArrayList<>();
-
+	/**
+	 * Theme to apply to language. Determines which set of CSS styles are applied to matches.
+	 */
+	@Getter
 	@XmlElementWrapper(name = "themes")
 	@XmlElement(name = "theme")
 	private List<Theme> themes = new ArrayList<>();
-
+	/**
+	 * Language identifier.
+	 */
+	@Getter
 	@XmlAttribute
 	private String name;
 
@@ -24,27 +35,28 @@ public class Language {
 		this.name = name;
 	}
 
+	@SuppressWarnings("unused")
 	public Language() {
-		/* Just for JAXB */
+		// For JAXB instantiation
 	}
 
-	public List<Rule> getRules() {
-		return rules;
-	}
-
+	/**
+	 * Add a rule to the language.
+	 *
+	 * @param rule
+	 * 		Rule to add.
+	 */
 	public void addRule(Rule rule) {
 		this.rules.add(rule);
 	}
 
-	public List<Theme> getThemes() {
-		return themes;
-	}
-
+	/**
+	 * Add a theme to the language.
+	 *
+	 * @param theme
+	 * 		Theme to add.
+	 */
 	public void addTheme(Theme theme) {
 		this.themes.add(theme);
-	}
-
-	public String getName() {
-		return name;
 	}
 }

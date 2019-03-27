@@ -9,19 +9,26 @@ import javax.xml.bind.annotation.*;
  * @author Geoff Hayward
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Rule {
+public class StyleProperty {
 	/**
-	 * The rule identifier.
+	 * The target rule this style applies to.
 	 */
 	@Getter
 	@Setter
 	@XmlAttribute
-	private String name;
+	private String targetRule;
 	/**
-	 * The regex pattern.
+	 * The CSS property name.
 	 */
 	@Getter
 	@Setter
-	@XmlElement
-	private String pattern;
+	@XmlAttribute
+	private String key;
+	/**
+	 * The CSS property value.
+	 */
+	@Getter
+	@Setter
+	@XmlAttribute
+	private String value;
 }

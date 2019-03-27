@@ -10,7 +10,7 @@ public class ImporterTest {
 
     // Test not intended as a Unit test - hits the disk.
     public static void main(String[] args) throws JAXBException, IOException {
-        Configuration configuration = Importer.importDefaultConfiguration();
+        Configuration configuration = Importer.importDefault();
         for(Language lang : configuration.getLanguages()){
             System.out.println("Language: " + lang.getName());
             System.out.println("Rules:");
@@ -19,7 +19,7 @@ public class ImporterTest {
             }
             for(Theme theme : lang.getThemes()){
                 System.out.println("Theme: " + theme.getName());
-                for(StyleRule sr : theme.getStyles())
+                for(StyleProperty sr : theme.getStyles())
                     System.out.println("- " + sr.getKey() + ": " + sr.getValue());
             }
         }

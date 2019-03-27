@@ -1,10 +1,8 @@
 package me.coley.j2h.config.model;
 
+import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,20 +12,28 @@ import java.util.List;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Configuration {
-
+	@Getter
 	@XmlElement(name = "language")
 	private List<Language> languages = new ArrayList<>();
 
-	public List<Language> getLanguages() {
-		return new ArrayList<>(languages);
-	}
-
+	/**
+	 * Add a language to the config.
+	 *
+	 * @param language
+	 * 		Language to add to the config.
+	 */
 	public void addLanguage(Language language) {
 		languages.add(language);
 	}
 
-	public Language findLanguageByNames(String name) {
+	/**
+	 * @param name
+	 * 		Language identifier.
+	 *
+	 * @return Languages matching the given name.
+	 */
+	public Language findByName(String name) {
 		return languages.stream().filter(l -> l.getName().equalsIgnoreCase(name)).findFirst()
-                .orElse(null);
+				.orElse(null);
 	}
 }

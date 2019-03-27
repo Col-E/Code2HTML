@@ -11,7 +11,6 @@ import java.util.*;
  * @author Matt
  */
 public class PatternHelper {
-
 	private final List<RegexRule> rules = new ArrayList<>();
 
 	/**

@@ -16,21 +16,16 @@ import javafx.util.Pair;
 import jregex.Matcher;
 import jregex.Pattern;
 import me.coley.j2h.config.Importer;
-import me.coley.j2h.config.model.Configuration;
-import me.coley.j2h.config.model.Language;
-import me.coley.j2h.config.model.Rule;
-import me.coley.j2h.config.model.Theme;
+import me.coley.j2h.config.model.*;
 import me.coley.j2h.regex.PatternHelper;
 import me.coley.j2h.regex.RegexRule;
 import me.coley.j2h.ui.RegexCell;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.validation.ValidationSupport;
-
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.controlsfx.validation.Validator.createEmptyValidator;
@@ -250,12 +245,12 @@ public class Java2Html extends Application {
 	 * Add regex rules for matching code.
 	 */
 	private void initRegex() throws JAXBException, IOException {
-		Configuration configuration = Importer.importDefaultConfiguration();
-		Language java = configuration.findLanguageByNames("Java");
+		Configuration configuration = Importer.importDefault();
+		Language java = configuration.findByName("Java");
 		Theme theme = java.getThemes().get(0);
 		for(Rule rule : java.getRules()) {
 			RegexRule regexRule = new RegexRule(rule.getName(), rule.getPattern());
-			regexRule.addStyle(theme.getStylesForTargetByName(rule.getName()));
+			regexRule.addStyle(theme.findStylesByTargetRule(rule.getName()));
 			helper.addRule(regexRule);
 		}
 	}

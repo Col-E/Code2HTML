@@ -1,11 +1,9 @@
 package me.coley.j2h.regex;
 
-import me.coley.j2h.config.model.StyleRule;
+import me.coley.j2h.config.model.StyleProperty;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Wrapper for grouping a regex pattern with an identifier.
@@ -13,7 +11,6 @@ import java.util.Map;
  * @author Matt
  */
 public class RegexRule {
-
 	@XmlElement(name = "pattern")
 	private final String pattern;
 	private final String group;
@@ -33,9 +30,9 @@ public class RegexRule {
 		return style;
 	}
 
-	public void addStyle(List<StyleRule> styles) {
-		for(StyleRule sr : styles) {
-			this.style.put(sr.getKey(), sr.getValue());
+	public void addStyle(List<StyleProperty> styles) {
+		for(StyleProperty sr : styles) {
+			style.put(sr.getKey(), sr.getValue());
 		}
 	}
 

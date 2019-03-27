@@ -1,38 +1,64 @@
 package me.coley.j2h.config;
 
 import me.coley.j2h.config.model.Configuration;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * @author Geoff Hayward
  */
 public final class Importer {
-	public static Configuration importConfiguration(String path) throws JAXBException,
-			IOException {
+	private final static String DEFAULT_CONF = "default-config.j2h";
+
+	/**
+	 * @param path
+	 * 		Path to configuration file.
+	 *
+	 * @return Configuration instance from file.
+	 *
+	 * @throws JAXBException
+	 * 		Thrown if JAXBContext failed to initialize.
+	 * @throws IOException
+	 * 		Thrown if the file could not be read from.
+	 */
+	public static Configuration importFrom(String path) throws JAXBException, IOException {
 		JAXBContext context = JAXBContext.newInstance(Configuration.class);
 		Unmarshaller um = context.createUnmarshaller();
-		return (Configuration) um.unmarshal(new StringReader(readFile(path, StandardCharsets
-				.UTF_8)));
+		return (Configuration) um.unmarshal(new StringReader(readFile(path, UTF_8)));
 	}
 
-	public static Configuration importDefaultConfiguration() throws JAXBException, IOException {
+	/**
+	 * @return Configuration instance from default file.
+	 *
+	 * @throws JAXBException
+	 * 		Thrown if JAXBContext failed to initialize.
+	 * @throws IOException
+	 * 		Thrown if the file could not be read from.
+	 */
+	public static Configuration importDefault() throws JAXBException, IOException {
 		ClassLoader classloader = Importer.class.getClassLoader();
-		String uri = classloader.getResource("default-config.j2h").toExternalForm();
+		String uri = classloader.getResource(DEFAULT_CONF).toExternalForm();
 		Path path = Paths.get(URI.create(uri));
-		return importConfiguration(path.toString());
+		return importFrom(path.toString());
 	}
 
+	/**
+	 * @param path
+	 * 		Path to file.
+	 * @param encoding
+	 * 		File encoding.
+	 *
+	 * @return Content of file.
+	 *
+	 * @throws IOException
+	 * 		Thrown if the file could not be read from.
+	 */
 	private static String readFile(String path, Charset encoding) throws IOException {
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
