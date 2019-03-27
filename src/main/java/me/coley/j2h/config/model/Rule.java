@@ -6,6 +6,8 @@ import lombok.Setter;
 import javax.xml.bind.annotation.*;
 
 /**
+ * Language rule that matches against a feature of a language using regex.
+ *
  * @author Geoff Hayward
  */
 @XmlAccessorType(XmlAccessType.FIELD)

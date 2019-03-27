@@ -6,6 +6,8 @@ import lombok.Setter;
 import javax.xml.bind.annotation.*;
 
 /**
+ * CSS properties to apply to some language's rule.
+ *
  * @author Geoff Hayward
  */
 @XmlAccessorType(XmlAccessType.FIELD)

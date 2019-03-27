@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A collection of rules that match against a language's feature set and themes to apply distinct
+ * styles to each of these rules.
+ *
  * @author Geoff Hayward
  */
 @XmlAccessorType(XmlAccessType.FIELD)

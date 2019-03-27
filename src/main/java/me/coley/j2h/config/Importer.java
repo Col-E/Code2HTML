@@ -1,6 +1,7 @@
 package me.coley.j2h.config;
 
 import me.coley.j2h.config.model.Configuration;
+
 import javax.xml.bind.*;
 import java.io.IOException;
 import java.io.StringReader;
@@ -11,6 +12,8 @@ import java.nio.file.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
+ * Configuration importer.
+ *
  * @author Geoff Hayward
  */
 public final class Importer {
@@ -23,7 +26,8 @@ public final class Importer {
 	 * @return Configuration instance from file.
 	 *
 	 * @throws JAXBException
-	 * 		Thrown if JAXBContext failed to initialize.
+	 * 		Thrown if JAXBContext failed to initialize.<br>
+	 * 		This typically means the file is formatted incorrectly.
 	 * @throws IOException
 	 * 		Thrown if the file could not be read from.
 	 */
@@ -37,7 +41,8 @@ public final class Importer {
 	 * @return Configuration instance from default file.
 	 *
 	 * @throws JAXBException
-	 * 		Thrown if JAXBContext failed to initialize.
+	 * 		Thrown if JAXBContext failed to initialize.<br>
+	 * 		This typically means the file is formatted incorrectly.
 	 * @throws IOException
 	 * 		Thrown if the file could not be read from.
 	 */

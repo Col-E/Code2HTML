@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Configuration for managing multiple languages.
+ *
  * @author Geoff Hayward
  */
 @XmlRootElement

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Collection of styles that will be applied to a language's rule-set.
+ *
  * @author Geoff Hayward
  */
 @XmlAccessorType(XmlAccessType.FIELD)
