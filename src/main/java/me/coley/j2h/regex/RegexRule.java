@@ -33,8 +33,8 @@ public class RegexRule {
 		return style;
 	}
 
-	public void addStyle(List<StyleRule> styles){
-		for (StyleRule sr: styles){
+	public void addStyle(List<StyleRule> styles) {
+		for(StyleRule sr : styles) {
 			this.style.put(sr.getKey(), sr.getValue());
 		}
 	}

@@ -2,7 +2,6 @@ package me.coley.j2h.loader;
 
 import me.coley.j2h.config.Importer;
 import me.coley.j2h.config.model.*;
-import me.coley.j2h.modle.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;

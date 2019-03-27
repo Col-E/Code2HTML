@@ -31,8 +31,6 @@ public final class RegexCell extends ListCell<RegexRule> {
 	}
 
 	private static String escape(String text) {
-		return text
-				.replace("\n", "\\n")
-				.replace("\t","\\t");
+		return text.replace("\n", "\\n").replace("\t", "\\t");
 	}
 }

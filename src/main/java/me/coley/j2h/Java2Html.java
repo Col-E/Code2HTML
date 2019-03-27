@@ -68,7 +68,7 @@ public class Java2Html extends Application {
 		try {
 			// Setup initial regular expressions
 			initRegex();
-		} catch (JAXBException | IOException e) {
+		} catch(JAXBException | IOException e) {
 			// In time configuration loading issues need to be displayed
 			// in the UI as a helpful error message.
 			e.printStackTrace();
@@ -103,7 +103,7 @@ public class Java2Html extends Application {
 						return;
 					String body = matcher.group("BODY");
 					// Parse the body of the css class and update the regex-rule style map.
-					r = "({key}\\S+):\\s*({value}.+)";
+					r = "({key}\\S+):\\s*({value}.+)(?=;)";
 					pattern = new Pattern(r);
 					matcher = pattern.matcher(body);
 					while(matcher.find()) {
@@ -253,7 +253,7 @@ public class Java2Html extends Application {
 		Configuration configuration = Importer.importDefaultConfiguration();
 		Language java = configuration.findLanguageByNames("Java");
 		Theme theme = java.getThemes().get(0);
-		for (Rule rule : java.getRules()) {
+		for(Rule rule : java.getRules()) {
 			RegexRule regexRule = new RegexRule(rule.getName(), rule.getPattern());
 			regexRule.addStyle(theme.getStylesForTargetByName(rule.getName()));
 			helper.addRule(regexRule);

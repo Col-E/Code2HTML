@@ -5,27 +5,30 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * @author Geoff Hayward
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Rule {
 
-    @XmlAttribute
-    private String name;
-    @XmlElement
-    private String pattern;
+	@XmlAttribute
+	private String name;
+	@XmlElement
+	private String pattern;
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getPattern() {
-        return pattern;
-    }
+	public String getPattern() {
+		return pattern;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
-    }
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
+	}
 }

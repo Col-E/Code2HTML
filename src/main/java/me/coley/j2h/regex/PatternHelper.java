@@ -74,9 +74,9 @@ public class PatternHelper {
 		sb.append("/* =========================== */\n");
 		sb.append("/*    Custom element types     */\n");
 		sb.append("/* =========================== */\n");
-		for (RegexRule rule : rules) {
+		for(RegexRule rule : rules) {
 			sb.append("." + rule.getRawName() + " {");
-			for (Map.Entry<String, String> kv : rule.getStyle().entrySet())
+			for(Map.Entry<String, String> kv : rule.getStyle().entrySet())
 				sb.append("\n\t" + kv.getKey() + ": " + kv.getValue() + ";");
 			sb.append("\n}\n");
 		}
