@@ -1,6 +1,10 @@
 package me.coley.j2h.regex;
 
+import me.coley.j2h.modle.StyleRule;
+
+import javax.xml.bind.annotation.XmlElement;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -9,8 +13,11 @@ import java.util.Map;
  * @author Matt
  */
 public class RegexRule {
+
+	@XmlElement(name = "pattern")
 	private final String pattern;
-	private final String group, raw;
+	private final String group;
+	private final String raw;
 	private final Map<String, String> style = new HashMap<>();
 
 	public RegexRule(String name, String pattern) {
@@ -24,6 +31,12 @@ public class RegexRule {
 	 */
 	public Map<String, String> getStyle() {
 		return style;
+	}
+
+	public void addStyle(List<StyleRule> styles){
+		for (StyleRule sr: styles){
+			this.style.put(sr.getKey(), sr.getValue());
+		}
 	}
 
 	/**
