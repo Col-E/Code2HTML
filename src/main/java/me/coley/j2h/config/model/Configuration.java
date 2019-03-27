@@ -1,4 +1,4 @@
-package me.coley.j2h.modle;
+package me.coley.j2h.config.model;
 
 
 

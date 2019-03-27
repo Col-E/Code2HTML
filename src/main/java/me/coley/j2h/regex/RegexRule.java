@@ -1,6 +1,6 @@
 package me.coley.j2h.regex;
 
-import me.coley.j2h.modle.StyleRule;
+import me.coley.j2h.config.model.StyleRule;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.HashMap;

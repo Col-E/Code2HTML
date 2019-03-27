@@ -15,23 +15,20 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import jregex.Matcher;
 import jregex.Pattern;
-import me.coley.j2h.loader.Importer;
-import me.coley.j2h.modle.Configuration;
-import me.coley.j2h.modle.Language;
-import me.coley.j2h.modle.Rule;
-import me.coley.j2h.modle.Theme;
+import me.coley.j2h.config.Importer;
+import me.coley.j2h.config.model.Configuration;
+import me.coley.j2h.config.model.Language;
+import me.coley.j2h.config.model.Rule;
+import me.coley.j2h.config.model.Theme;
 import me.coley.j2h.regex.PatternHelper;
 import me.coley.j2h.regex.RegexRule;
 import me.coley.j2h.ui.RegexCell;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.validation.ValidationSupport;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;

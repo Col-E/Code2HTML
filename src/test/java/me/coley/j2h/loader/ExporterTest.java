@@ -1,6 +1,7 @@
 package me.coley.j2h.loader;
 
-import me.coley.j2h.modle.Configuration;
+import me.coley.j2h.config.Importer;
+import me.coley.j2h.config.model.Configuration;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
