@@ -83,15 +83,11 @@ public class Java2Html extends Application {
 			Language language = configuration.getLanguages().get(0);
 			Theme theme = language.getThemes().get(0);
 			helper = new ConfigHelper(configuration, language, theme);
-		} catch(JAXBException e) {
-			// TODO: Handle
-			e.printStackTrace();
-		} catch(IOException e) {
-			// TODO: Handle
-			e.printStackTrace();
 		} catch(Exception e) {
-			// TODO: Handle
 			e.printStackTrace();
+			fatal("Invalid default configuration",
+					"The default configuration file failed to be read.",
+					"Please ensure the default configuration file is properly formatted.");
 		}
 		// Inputs
 		txtInput.setText("class Example { \n\t// put source code here\n}");
@@ -177,11 +173,16 @@ public class Java2Html extends Application {
 					Configuration configuration = Importer.importFromFile(file.getAbsolutePath());
 					setConfig(configuration);
 				} catch(IOException ex) {
-					// TODO: handle
 					ex.printStackTrace();
+					error("Configuration write failure",
+							"The configuration could not be read from the selected file.",
+							"Ensure the file location is valid (permissions, disk space)");
 				} catch(JAXBException ex) {
-					// TODO: handle
 					ex.printStackTrace();
+					error("Configuration load failure",
+							"The configuration could not be parsed.",
+							"The configuration instance could not be read from XML");
+
 				}
 			}
 		});
@@ -192,11 +193,15 @@ public class Java2Html extends Application {
 					String text = Exporter.toString(helper.getConfiguration());
 					Files.write(Paths.get(file.toURI()), text.getBytes(UTF_8));
 				} catch(IOException ex) {
-					// TODO: handle
 					ex.printStackTrace();
+					error("Configuration write failure",
+							"The configuration could not be written to the selected file.",
+							"Ensure the file location is valid (permissions, disk space)");
 				} catch(JAXBException ex) {
-					// TODO: handle
 					ex.printStackTrace();
+					error("Configuration write failure",
+							"The configuration could not be exported.",
+							"The configuration instance could not be translated into XML");
 				}
 			}
 		});
@@ -229,12 +234,16 @@ public class Java2Html extends Application {
 	 */
 	private void setConfig(Configuration configuration) {
 		if(configuration.getLanguages().isEmpty()) {
-			// TODO: Alert user to failure
+			error("Configuration load error",
+					"The configuration has no languages.",
+					"Use a config that has a specified language");
 			return;
 		}
 		Language language = configuration.getLanguages().get(0);
 		if(language.getThemes().isEmpty()) {
-			// TODO: Alert user to failure
+			error("Configuration load error",
+					"The configuration has no themes.",
+					"Use a config that has a specified theme");
 			return;
 		}
 		Theme theme = language.getThemes().get(0);
@@ -275,7 +284,7 @@ public class Java2Html extends Application {
 	}
 
 	/**
-	 * Reset the config pane.
+	 * Reset the config pane. Shows the rules of the currently active language.
 	 */
 	private void updateConfigPane() {
 		ListView<Rule> view = new ListView<>();
@@ -409,4 +418,38 @@ public class Java2Html extends Application {
 		browser.getEngine().loadContent(sbWeb.toString());
 		txtHTML.setText(html);
 	}
+
+	/**
+	 * Show error dialog and then exit.
+	 *
+	 * @param title
+	 * 		Dialog title.
+	 * @param header
+	 * 		Message header.
+	 * @param content
+	 * 		Message content.
+	 */
+	private static void fatal(String title, String header, String content) {
+		error(title, header, content);
+		System.exit(-1);
+	}
+
+	/**
+	 * Show error dialog.
+	 *
+	 * @param title
+	 * 		Dialog title.
+	 * @param header
+	 * 		Message header.
+	 * @param content
+	 * 		Message content.
+	 */
+	private static void error(String title, String header, String content) {
+		Alert alert = new Alert(Alert.AlertType.ERROR);
+		alert.setTitle(title);
+		alert.setHeaderText(header);
+		alert.setContentText(content);
+		alert.showAndWait();
+	}
+
 }
