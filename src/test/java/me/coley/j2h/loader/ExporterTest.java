@@ -11,9 +11,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.*;
 
-
 public class ExporterTest {
-
 	private Configuration configuration;
 
 	@Before

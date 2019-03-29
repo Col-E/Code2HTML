@@ -17,15 +17,16 @@ import jregex.Matcher;
 import jregex.Pattern;
 import me.coley.j2h.config.Importer;
 import me.coley.j2h.config.model.*;
-import me.coley.j2h.regex.PatternHelper;
-import me.coley.j2h.regex.RegexRule;
-import me.coley.j2h.ui.RegexCell;
+import me.coley.j2h.config.ConfigHelper;
+import me.coley.j2h.ui.RuleCell;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.validation.ValidationSupport;
+
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.controlsfx.validation.Validator.createEmptyValidator;
@@ -37,7 +38,6 @@ import static org.controlsfx.validation.Validator.createPredicateValidator;
  * @author Matt
  */
 public class Java2Html extends Application {
-	private final PatternHelper helper = new PatternHelper();
 	// Base values
 	private static String css = "";
 	private static String js = "";
@@ -49,12 +49,16 @@ public class Java2Html extends Application {
 	private final TextArea txtJS = new TextArea();
 	//
 	private boolean canUpdate = true;
+	private ConfigHelper helper;
+
 
 	public static void main(String[] args) {
 		try {
 			css = IOUtils.toString(Java2Html.class.getResourceAsStream("/code.css"), UTF_8);
 			js = IOUtils.toString(Java2Html.class.getResourceAsStream("/code.js"), UTF_8);
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			// TODO: Handle exception
+		}
 		launch(args);
 	}
 
@@ -63,9 +67,14 @@ public class Java2Html extends Application {
 		try {
 			// Setup initial regular expressions
 			initRegex();
-		} catch(JAXBException | IOException e) {
-			// In time configuration loading issues need to be displayed
-			// in the UI as a helpful error message.
+		} catch(JAXBException e) {
+			// TODO: Handle
+			e.printStackTrace();
+		} catch(IOException e) {
+			// TODO: Handle
+			e.printStackTrace();
+		} catch(Exception e) {
+			// TODO: Handle
 			e.printStackTrace();
 		}
 		// Inputs
@@ -82,16 +91,16 @@ public class Java2Html extends Application {
 			update();
 		});
 		txtCSS.textProperty().addListener((ob, o, n) -> {
-			// Update RegexRule style map
+			// Update style map
 			// - Assume 'pre' tag still exists. Hacky but should be fine
-			int indx = txtCSS.getText().indexOf("pre {");
-			String old = o.substring(0, indx);
-			String cur = n.substring(0, indx);
+			int index = txtCSS.getText().indexOf("pre {");
+			String old = o.substring(0, index);
+			String cur = n.substring(0, index);
 			// Only update if the section for custom elements is updated.
 			if(!old.equalsIgnoreCase(cur)) {
 				// Iterate over css tags (by matching via regex)
-				for(RegexRule rule : helper.getRules()) {
-					String r = "(\\.({TITLE}" + rule.getRawName() + ")\\s*\\{({BODY}[^}]*))\\}";
+				for(Rule rule : helper.getRules()) {
+					String r = "(\\.({TITLE}" + rule.getName() + ")\\s*\\{({BODY}[^}]*))\\}";
 					Pattern pattern = new Pattern(r);
 					Matcher matcher = pattern.matcher(cur);
 					if(!matcher.find())
@@ -104,7 +113,7 @@ public class Java2Html extends Application {
 					while(matcher.find()) {
 						String key = matcher.group("key");
 						String value = matcher.group("value");
-						rule.getStyle().put(key, value);
+						helper.getTheme().update(rule.getName(), key, value);
 					}
 				}
 			}
@@ -116,9 +125,9 @@ public class Java2Html extends Application {
 			update();
 		});
 		// Config
-		ListView<RegexRule> view = new ListView<>();
+		ListView<Rule> view = new ListView<>();
 		view.getItems().addAll(helper.getRules());
-		view.setCellFactory(v -> new RegexCell());
+		view.setCellFactory(v -> new RuleCell());
 		view.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		BorderPane config = new BorderPane();
 		config.setCenter(view);
@@ -142,9 +151,9 @@ public class Java2Html extends Application {
 			btnUp.setDisable(n == null || i == 0);
 			btnDown.setDisable(n == null || i == view.getItems().size() - 1);
 		});
-		view.getItems().addListener((ListChangeListener<RegexRule>) c -> {
+		view.getItems().addListener((ListChangeListener<Rule>) c -> {
 			helper.getRules().clear();
-			for(RegexRule rule : view.getItems())
+			for(Rule rule : view.getItems())
 				helper.addRule(rule);
 			txtCSS.setText(helper.getPatternCSS() + css);
 			update();
@@ -194,7 +203,10 @@ public class Java2Html extends Application {
 			Optional<Pair<String, String>> result = dialog.showAndWait();
 			if(result.isPresent()) {
 				Pair<String, String> pair = result.get();
-				view.getItems().add(new RegexRule(pair.getKey(), pair.getValue()));
+				Rule rule = new Rule();
+				rule.setName(pair.getKey());
+				rule.setPattern(pair.getValue());
+				view.getItems().add(rule);
 			}
 		});
 		btnRemove.setOnAction(e -> view.getItems().remove(view.getSelectionModel()
@@ -245,16 +257,20 @@ public class Java2Html extends Application {
 	 * Add regex rules for matching code.
 	 */
 	private void initRegex() throws JAXBException, IOException {
-		Configuration configuration = Importer.importDefault();
-		Language java = configuration.findByName("Java");
-		Theme theme = java.getThemes().get(0);
-		for(Rule rule : java.getRules()) {
-			RegexRule regexRule = new RegexRule(rule.getName(), rule.getPattern());
-			regexRule.addStyle(theme.findStylesByTargetRule(rule.getName()));
-			helper.addRule(regexRule);
+		try {
+			Configuration configuration = Importer.importDefault();
+			Language language = configuration.getLanguages().get(0);
+			Theme theme = language.getThemes().get(0);
+			helper = new ConfigHelper(configuration, language, theme);
+		} catch(Exception e) {
+			// TODO: Throw exception if this fails, handle in UI
+			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Generate and update HTML output / preview.
+	 */
 	private void update() {
 		if(!canUpdate) {
 			return;
