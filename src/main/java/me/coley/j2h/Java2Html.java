@@ -67,10 +67,6 @@ public class Java2Html extends Application {
 			e.printStackTrace();
 			System.exit(-1);
 		}
-		// TODO: Would splitting this into a UI / CLI be worthwhile?
-		// - No args loads UI
-		// - Args loads CLI
-		//    - Automated CLI if all parameters given
 		launch(args);
 	}
 
