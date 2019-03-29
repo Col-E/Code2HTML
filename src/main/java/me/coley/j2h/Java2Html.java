@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.controlsfx.validation.Validator.createEmptyValidator;
 import static org.controlsfx.validation.Validator.createPredicateValidator;
 
@@ -54,6 +53,10 @@ public class Java2Html extends Application {
 
 	public static void main(String[] args) {
 		try {
+			// TODO: Would splitting this into a UI / CLI be worthwhile?
+			// - No args loads UI
+			// - Args loads CLI
+			//    - Automated CLI if all parameters given
 			css = IOUtils.toString(Java2Html.class.getResourceAsStream("/code.css"), UTF_8);
 			js = IOUtils.toString(Java2Html.class.getResourceAsStream("/code.js"), UTF_8);
 		} catch(Exception e) {
@@ -276,32 +279,7 @@ public class Java2Html extends Application {
 			return;
 		}
 		String text = txtInput.getText().replace("\t", "    ");
-		Pattern pattern = helper.getPattern();
-		Matcher matcher = pattern.matcher(text);
-		StringBuilder sb = new StringBuilder();
-		int lastEnd = 0;
-		while(matcher.find()) {
-			String styleClass = helper.getClassFromGroup(matcher);
-			int start = matcher.start();
-			int end = matcher.end();
-			// append text not matched
-			if(start > lastEnd) {
-				String unmatched = escapeHtml4(text.substring(lastEnd, start));
-				sb.append(unmatched);
-			}
-			// append match
-			String matched = escapeHtml4(text.substring(start, end));
-			sb.append("<span class=\"" + styleClass + "\">" + matched + "</span>");
-			lastEnd = end;
-		}
-		// Append ending text not matched
-		sb.append(escapeHtml4(text.substring(lastEnd)));
-		// Apply line formatting to each line
-		StringBuilder fmt = new StringBuilder();
-		for(String line : sb.toString().split("\n"))
-			fmt.append("<span class=\"line\"></span>" + line + "\n");
-		// Wrap in pre tags and slap it in an HTML page
-		String html = "<pre>" + fmt.toString() + "</pre>";
+		String html = helper.convert(text);
 		String style = txtCSS.getText();
 		StringBuilder sbWeb = new StringBuilder();
 		sbWeb.append("<html><head><style>");

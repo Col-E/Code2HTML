@@ -8,6 +8,8 @@ import me.coley.j2h.config.model.*;
 
 import java.util.List;
 
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
+
 /**
  * Utility to make working with the configuration object easier.
  *
@@ -59,6 +61,40 @@ public class ConfigHelper {
 	 */
 	public void addRule(Rule rule) {
 		language.addRule(rule);
+	}
+
+	/**
+	 * @param text
+	 * 		Text to convert into HTML.
+	 *
+	 * @return HTML of the text with matched attributes of the {@link #language current language}.
+	 */
+	public String convert(String text) {
+		Matcher matcher = getPattern().matcher(text);
+		StringBuilder sb = new StringBuilder();
+		int lastEnd = 0;
+		while(matcher.find()) {
+			String styleClass = getClassFromGroup(matcher);
+			int start = matcher.start();
+			int end = matcher.end();
+			// append text not matched
+			if(start > lastEnd) {
+				String unmatched = escapeHtml4(text.substring(lastEnd, start));
+				sb.append(unmatched);
+			}
+			// append match
+			String matched = escapeHtml4(text.substring(start, end));
+			sb.append("<span class=\"" + styleClass + "\">" + matched + "</span>");
+			lastEnd = end;
+		}
+		// Append ending text not matched
+		sb.append(escapeHtml4(text.substring(lastEnd)));
+		// Apply line formatting to each line
+		StringBuilder fmt = new StringBuilder();
+		for(String line : sb.toString().split("\n"))
+			fmt.append("<span class=\"line\"></span>" + line + "\n");
+		// Wrap in pre tags and slap it in an HTML page
+		return "<pre>" + fmt.toString() + "</pre>";
 	}
 
 	/**
