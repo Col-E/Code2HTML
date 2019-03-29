@@ -1,13 +1,15 @@
 package me.coley.j2h.config;
 
 import me.coley.j2h.config.model.Configuration;
+import org.apache.commons.io.IOUtils;
 
 import javax.xml.bind.*;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.*;
+import java.nio.file.spi.FileSystemProvider;
+import java.util.Collections;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -64,9 +66,18 @@ public final class Importer {
 	 */
 	public static Configuration importDefault() throws JAXBException, IOException {
 		ClassLoader classloader = Importer.class.getClassLoader();
-		String uri = classloader.getResource(DEFAULT_CONF).toExternalForm();
-		Path path = Paths.get(URI.create(uri));
-		return importFromFile(path.toString());
+		String uriPath = classloader.getResource(DEFAULT_CONF).toExternalForm();
+		URI uri = URI.create(uriPath);
+		switch(uri.getScheme()) {
+			case "file":
+				Path path = Paths.get(uri);
+				return importFromFile(path.toString());
+			case "jar":
+				InputStream in = classloader.getResourceAsStream(DEFAULT_CONF);
+				byte[] data = IOUtils.toByteArray(in);
+				return importFromText(new String(data, UTF_8));
+		}
+		throw new IOException("Default configuration location unknown");
 	}
 
 	/**
