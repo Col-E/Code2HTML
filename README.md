@@ -1,14 +1,14 @@
 # Java2HTML
 
-A JavaFX app for converting java to HTML. Paste source code into the top-left panel and the HTML will show in the top-right, with a preview at the bottom.
-The CSS and _optional JS_ are available in the other tabs in the top-right.
+A JavaFX app for converting Java _(Or a user specified language)_ to HTML. Paste source code into the top-left panel and the HTML will show in the top-right, with a preview at the bottom.
+The CSS and _optional JS_ are available in the other tabs in the top-right. Updating the CSS and JS will display live updates in the preview area.
 
 ### Top-Left tabs:
 
 * **HTML**: The HTML output.
 * **CSS**: The CSS code that styles the HTML span tags.
 * **JS**: Optional JS for manual inclusion of collapse-sections.
-* **Configuration**: List of Regex groups. If you want to add your own expressions, the option is there. Doing so will automatically generate a CSS entry for your expression's identifying name.
+* **Configuration**: List of Regex groups for the currently loaded language. 
 
 While the JS is not necessary it allows you to make portions of the code collapseable.
 
