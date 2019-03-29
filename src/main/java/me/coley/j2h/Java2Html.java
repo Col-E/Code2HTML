@@ -203,7 +203,6 @@ public class Java2Html extends Application {
 		});
 		mnFile.getItems().addAll(miConfigLoad);
 		mnFile.getItems().addAll(miConfigSave);
-		Menu mnLang = new Menu("Language");
 		MenuBar menuBar = new MenuBar();
 		menuBar.getMenus().addAll(mnFile, mnLang);
 		// Layout
@@ -263,6 +262,7 @@ public class Java2Html extends Application {
 			String name = language.getName();
 			name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
 			MenuItem miLang = new MenuItem(name);
+			mnLang.getItems().add(miLang);
 			// Disable if the language is the currently active one
 			if(language == helper.getLanguage()) {
 				miLang.setDisable(true);
@@ -275,7 +275,6 @@ public class Java2Html extends Application {
 					updateTitle();
 				});
 			}
-			mnLang.getItems().addAll(miLang);
 		}
 	}
 
