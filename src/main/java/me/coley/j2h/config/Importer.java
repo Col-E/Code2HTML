@@ -8,8 +8,6 @@ import java.io.*;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.*;
-import java.nio.file.spi.FileSystemProvider;
-import java.util.Collections;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
