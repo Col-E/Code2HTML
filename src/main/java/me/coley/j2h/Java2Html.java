@@ -11,19 +11,22 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import jregex.Matcher;
 import jregex.Pattern;
-import me.coley.j2h.config.Importer;
+import me.coley.j2h.config.*;
 import me.coley.j2h.config.model.*;
-import me.coley.j2h.config.ConfigHelper;
 import me.coley.j2h.ui.RuleCell;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.validation.ValidationSupport;
 
 import javax.xml.bind.JAXBException;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -46,30 +49,40 @@ public class Java2Html extends Application {
 	private final TextArea txtHTML = new TextArea();
 	private final TextArea txtCSS = new TextArea();
 	private final TextArea txtJS = new TextArea();
-	//
-	private boolean canUpdate = true;
+	// Misc layout & stuff
+	private final Menu mnLang = new Menu("Language");
+	private final BorderPane config = new BorderPane();
+	private Stage stage;
+	private boolean previewLock;
+	// Config
 	private ConfigHelper helper;
 
 
 	public static void main(String[] args) {
 		try {
-			// TODO: Would splitting this into a UI / CLI be worthwhile?
-			// - No args loads UI
-			// - Args loads CLI
-			//    - Automated CLI if all parameters given
 			css = IOUtils.toString(Java2Html.class.getResourceAsStream("/code.css"), UTF_8);
 			js = IOUtils.toString(Java2Html.class.getResourceAsStream("/code.js"), UTF_8);
 		} catch(Exception e) {
-			// TODO: Handle exception
+			System.err.println("Failed to load default resources: css/js");
+			e.printStackTrace();
+			System.exit(-1);
 		}
+		// TODO: Would splitting this into a UI / CLI be worthwhile?
+		// - No args loads UI
+		// - Args loads CLI
+		//    - Automated CLI if all parameters given
 		launch(args);
 	}
 
 	@Override
 	public void start(Stage stage) {
+		this.stage = stage;
 		try {
-			// Setup initial regular expressions
-			initRegex();
+			// Setup
+			Configuration configuration = Importer.importDefault();
+			Language language = configuration.getLanguages().get(0);
+			Theme theme = language.getThemes().get(0);
+			helper = new ConfigHelper(configuration, language, theme);
 		} catch(JAXBException e) {
 			// TODO: Handle
 			e.printStackTrace();
@@ -91,7 +104,7 @@ public class Java2Html extends Application {
 		txtJS.setText(js);
 		txtInput.textProperty().addListener((ob, o, n) -> {
 			// Update HTML
-			update();
+			updateHTML();
 		});
 		txtCSS.textProperty().addListener((ob, o, n) -> {
 			// Update style map
@@ -121,19 +134,154 @@ public class Java2Html extends Application {
 				}
 			}
 			// Update HTML
-			update();
+			updateHTML();
 		});
 		txtJS.textProperty().addListener((ob, o, n) -> {
 			// Update HTML
-			update();
+			updateHTML();
 		});
 		// Config
+		updateConfigPane();
+		// Tabs
+		TabPane tabs = new TabPane();
+		Tab tabHTML = new Tab("HTML", txtHTML);
+		Tab tabCSS = new Tab("CSS", txtCSS);
+		Tab tabJS = new Tab("JS", txtJS);
+		Tab tabConfig = new Tab("Configuration", config);
+		tabHTML.getStyleClass().add("tab-small");
+		tabCSS.getStyleClass().add("tab-small");
+		tabJS.getStyleClass().add("tab-small");
+		tabConfig.getStyleClass().add("tab-large");
+		tabs.getTabs().add(tabHTML);
+		tabs.getTabs().add(tabCSS);
+		tabs.getTabs().add(tabJS);
+		tabs.getTabs().add(tabConfig);
+		// Menubar
+		Menu mnFile = new Menu("File");
+		MenuItem miConfigLoad = new MenuItem("Load config...");
+		MenuItem miConfigSave = new MenuItem("Save config...");
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Configurations",
+				"*.j2h", "*.xml");
+		FileChooser fcSave = new FileChooser();
+		fcSave.setInitialDirectory(new File(System.getProperty("user.dir")));
+		fcSave.setTitle("Save configuration");
+		fcSave.getExtensionFilters().add(extFilter);
+		FileChooser fcLoad = new FileChooser();
+		fcLoad.setInitialDirectory(new File(System.getProperty("user.dir")));
+		fcLoad.setTitle("Select configuration");
+		fcLoad.getExtensionFilters().add(extFilter);
+		miConfigLoad.setOnAction(e -> {
+			File file = fcLoad.showOpenDialog(stage);
+			if(file != null) {
+				try {
+					Configuration configuration = Importer.importFromFile(file.getAbsolutePath());
+					setConfig(configuration);
+				} catch(IOException ex) {
+					// TODO: handle
+					ex.printStackTrace();
+				} catch(JAXBException ex) {
+					// TODO: handle
+					ex.printStackTrace();
+				}
+			}
+		});
+		miConfigSave.setOnAction(e -> {
+			File file = fcSave.showSaveDialog(stage);
+			if(file != null) {
+				try {
+					String text = Exporter.toString(helper.getConfiguration());
+					Files.write(Paths.get(file.toURI()), text.getBytes(UTF_8));
+				} catch(IOException ex) {
+					// TODO: handle
+					ex.printStackTrace();
+				} catch(JAXBException ex) {
+					// TODO: handle
+					ex.printStackTrace();
+				}
+			}
+		});
+		mnFile.getItems().addAll(miConfigLoad);
+		mnFile.getItems().addAll(miConfigSave);
+		Menu mnLang = new Menu("Language");
+		MenuBar menuBar = new MenuBar();
+		menuBar.getMenus().addAll(mnFile, mnLang);
+		// Layout
+		SplitPane pane = new SplitPane(txtInput, tabs);
+		SplitPane vert = new SplitPane(pane, browser);
+		vert.setOrientation(Orientation.VERTICAL);
+		BorderPane wrap = new BorderPane();
+		wrap.setTop(menuBar);
+		wrap.setCenter(vert);
+		Scene scene = new Scene(wrap, 900, 800);
+		scene.getStylesheets().add("gui.css");
+		stage.setScene(scene);
+		updateTitle();
+		updateLanguageMenu();
+		stage.show();
+		Platform.runLater(() -> updateHTML());
+	}
+
+	/**
+	 * Update the ui that need to be refreshed for the new configuration.
+	 *
+	 * @param configuration
+	 * 		New configuration to load.
+	 */
+	private void setConfig(Configuration configuration) {
+		if(configuration.getLanguages().isEmpty()) {
+			// TODO: Alert user to failure
+			return;
+		}
+		Language language = configuration.getLanguages().get(0);
+		if(language.getThemes().isEmpty()) {
+			// TODO: Alert user to failure
+			return;
+		}
+		Theme theme = language.getThemes().get(0);
+		helper = new ConfigHelper(configuration, language, theme);
+		txtCSS.setText(helper.getPatternCSS() + css);
+		updateConfigPane();
+		updateLanguageMenu();
+		updateHTML();
+	}
+
+	/**
+	 * Update the language menu to show the currently supported languages.
+	 */
+	private void updateLanguageMenu() {
+		mnLang.getItems().clear();
+		for(Language language : helper.getConfiguration().getLanguages()) {
+			// Skip language if it has no theme
+			if(language.getThemes().isEmpty())
+				continue;
+			// Create menu-item that sets the current language
+			String name = language.getName();
+			name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+			MenuItem miLang = new MenuItem(name);
+			// Disable if the language is the currently active one
+			if(language == helper.getLanguage()) {
+				miLang.setDisable(true);
+			} else {
+				miLang.setOnAction(e -> {
+					helper.setLanguage(language);
+					helper.setTheme(language.getThemes().get(0));
+					updateConfigPane();
+					updateHTML();
+					updateTitle();
+				});
+			}
+			mnLang.getItems().addAll(miLang);
+		}
+	}
+
+	/**
+	 * Reset the config pane.
+	 */
+	private void updateConfigPane() {
 		ListView<Rule> view = new ListView<>();
 		view.getItems().addAll(helper.getRules());
 		view.setCellFactory(v -> new RuleCell());
 		view.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		BorderPane config = new BorderPane();
-		config.setCenter(view);
 		GridPane configInputs = new GridPane();
 		Button btnAdd = new Button("New Rule");
 		Button btnRemove = new Button("Remove Selected");
@@ -146,7 +294,6 @@ public class Java2Html extends Application {
 		configInputs.add(btnRemove, 1, 0);
 		configInputs.add(btnUp, 2, 0);
 		configInputs.add(btnDown, 3, 0);
-		config.setBottom(configInputs);
 		view.getSelectionModel().selectedItemProperty().addListener((ob, o, n) -> {
 			btnRemove.setDisable(n == null);
 			// Moving
@@ -159,7 +306,7 @@ public class Java2Html extends Application {
 			for(Rule rule : view.getItems())
 				helper.addRule(rule);
 			txtCSS.setText(helper.getPatternCSS() + css);
-			update();
+			updateHTML();
 		});
 		btnAdd.setOnAction(e -> {
 			// Inputs
@@ -216,66 +363,38 @@ public class Java2Html extends Application {
 				.getSelectedIndex()));
 		btnUp.setOnAction(e -> {
 			int i = view.getSelectionModel().getSelectedIndex();
-			canUpdate = false;
+			previewLock = true;
 			Collections.swap(helper.getRules(), i, i - 1);
 			Collections.swap(view.getItems(), i, i - 1);
 			view.getSelectionModel().select(i - 1);
-			canUpdate = true;
+			previewLock = false;
 		});
 		btnDown.setOnAction(e -> {
 			int i = view.getSelectionModel().getSelectedIndex();
-			canUpdate = false;
+			previewLock = false;
 			Collections.swap(helper.getRules(), i, i + 1);
 			Collections.swap(view.getItems(), i, i + 1);
 			view.getSelectionModel().select(i + 1);
-			canUpdate = true;
+			previewLock = true;
 		});
-		// Tabs
-		TabPane tabs = new TabPane();
-		Tab tabHTML = new Tab("HTML", txtHTML);
-		Tab tabCSS = new Tab("CSS", txtCSS);
-		Tab tabJS = new Tab("JS", txtJS);
-		Tab tabConfig = new Tab("Configuration", config);
-		tabHTML.getStyleClass().add("tab-small");
-		tabCSS.getStyleClass().add("tab-small");
-		tabJS.getStyleClass().add("tab-small");
-		tabConfig.getStyleClass().add("tab-large");
-		tabs.getTabs().add(tabHTML);
-		tabs.getTabs().add(tabCSS);
-		tabs.getTabs().add(tabJS);
-		tabs.getTabs().add(tabConfig);
-		// Layout
-		SplitPane pane = new SplitPane(txtInput, tabs);
-		SplitPane vert = new SplitPane(pane, browser);
-		vert.setOrientation(Orientation.VERTICAL);
-		Scene scene = new Scene(vert, 900, 800);
-		scene.getStylesheets().add("gui.css");
-		stage.setScene(scene);
-		stage.setTitle("Java2Html");
-		stage.show();
-		Platform.runLater(() -> update());
+		config.setCenter(view);
+		config.setBottom(configInputs);
 	}
 
 	/**
-	 * Add regex rules for matching code.
+	 * Update title to match current language.
 	 */
-	private void initRegex() throws JAXBException, IOException {
-		try {
-			Configuration configuration = Importer.importDefault();
-			Language language = configuration.getLanguages().get(0);
-			Theme theme = language.getThemes().get(0);
-			helper = new ConfigHelper(configuration, language, theme);
-		} catch(Exception e) {
-			// TODO: Throw exception if this fails, handle in UI
-			e.printStackTrace();
-		}
+	private void updateTitle() {
+		String name = helper.getLanguage().getName();
+		name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+		stage.setTitle(name + "2Html");
 	}
 
 	/**
 	 * Generate and update HTML output / preview.
 	 */
-	private void update() {
-		if(!canUpdate) {
+	private void updateHTML() {
+		if(previewLock) {
 			return;
 		}
 		String text = txtInput.getText().replace("\t", "    ");
