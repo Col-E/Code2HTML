@@ -384,6 +384,8 @@ public class Java2Html extends Application {
 				helper.getLanguage().addTheme(theme);
 				helper.setTheme(theme);
 				updateThemeMenu();
+				updateCSS();
+				updateHTML();
 			}
 		});
 		mnTheme.getItems().add(mnNew);
