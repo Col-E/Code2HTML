@@ -51,7 +51,8 @@ public class Java2Html extends Application {
 	private final TextArea txtJS = new TextArea();
 	// Misc layout & stuff
 	private final Menu mnLang = new Menu("Language");
-	private final BorderPane config = new BorderPane();
+	private final Menu mnTheme = new Menu("Theme");
+	private final BorderPane patternsPane = new BorderPane();
 	private Stage stage;
 	private boolean previewLock;
 	// Config
@@ -92,7 +93,7 @@ public class Java2Html extends Application {
 		txtCSS.setFont(Font.font("monospace"));
 		txtJS.setFont(Font.font("monospace"));
 		txtHTML.setEditable(false);
-		txtCSS.setText(helper.getPatternCSS() + css);
+		updateCSS();
 		txtJS.setText(js);
 		txtInput.textProperty().addListener((ob, o, n) -> {
 			// Update HTML
@@ -133,21 +134,21 @@ public class Java2Html extends Application {
 			updateHTML();
 		});
 		// Config
-		updateConfigPane();
+		updateRulesPane();
 		// Tabs
 		TabPane tabs = new TabPane();
 		Tab tabHTML = new Tab("HTML", txtHTML);
 		Tab tabCSS = new Tab("CSS", txtCSS);
 		Tab tabJS = new Tab("JS", txtJS);
-		Tab tabConfig = new Tab("Configuration", config);
+		Tab tabPatterns = new Tab("Patterns", patternsPane);
 		tabHTML.getStyleClass().add("tab-small");
 		tabCSS.getStyleClass().add("tab-small");
 		tabJS.getStyleClass().add("tab-small");
-		tabConfig.getStyleClass().add("tab-large");
+		tabPatterns.getStyleClass().add("tab-large");
 		tabs.getTabs().add(tabHTML);
 		tabs.getTabs().add(tabCSS);
 		tabs.getTabs().add(tabJS);
-		tabs.getTabs().add(tabConfig);
+		tabs.getTabs().add(tabPatterns);
 		// Menubar
 		Menu mnFile = new Menu("File");
 		MenuItem miConfigLoad = new MenuItem("Load config...");
@@ -167,7 +168,7 @@ public class Java2Html extends Application {
 			if(file != null) {
 				try {
 					Configuration configuration = Importer.importFromFile(file.getAbsolutePath());
-					setConfig(configuration);
+					setConfiguration(configuration);
 				} catch(IOException ex) {
 					ex.printStackTrace();
 					error("Configuration write failure",
@@ -204,7 +205,7 @@ public class Java2Html extends Application {
 		mnFile.getItems().addAll(miConfigLoad);
 		mnFile.getItems().addAll(miConfigSave);
 		MenuBar menuBar = new MenuBar();
-		menuBar.getMenus().addAll(mnFile, mnLang);
+		menuBar.getMenus().addAll(mnFile, mnLang, mnTheme);
 		// Layout
 		SplitPane pane = new SplitPane(txtInput, tabs);
 		SplitPane vert = new SplitPane(pane, browser);
@@ -217,6 +218,7 @@ public class Java2Html extends Application {
 		stage.setScene(scene);
 		updateTitle();
 		updateLanguageMenu();
+		updateThemeMenu();
 		stage.show();
 		Platform.runLater(() -> updateHTML());
 	}
@@ -227,7 +229,7 @@ public class Java2Html extends Application {
 	 * @param configuration
 	 * 		New configuration to load.
 	 */
-	private void setConfig(Configuration configuration) {
+	private void setConfiguration(Configuration configuration) {
 		if(configuration.getLanguages().isEmpty()) {
 			error("Configuration load error",
 					"The configuration has no languages.",
@@ -243,9 +245,10 @@ public class Java2Html extends Application {
 		}
 		Theme theme = language.getThemes().get(0);
 		helper = new ConfigHelper(configuration, language, theme);
-		txtCSS.setText(helper.getPatternCSS() + css);
-		updateConfigPane();
+		updateCSS();
+		updateRulesPane();
 		updateLanguageMenu();
+		updateThemeMenu();
 		updateHTML();
 	}
 
@@ -270,7 +273,8 @@ public class Java2Html extends Application {
 				miLang.setOnAction(e -> {
 					helper.setLanguage(language);
 					helper.setTheme(language.getThemes().get(0));
-					updateConfigPane();
+					updateRulesPane();
+					updateThemeMenu();
 					updateHTML();
 					updateTitle();
 				});
@@ -279,14 +283,72 @@ public class Java2Html extends Application {
 	}
 
 	/**
+	 * Update te theme menu to show the currently supported themes for the language.
+	 */
+	private void updateThemeMenu() {
+		mnTheme.getItems().clear();
+		for (Theme theme : helper.getLanguage().getThemes()) {
+			// Create menu-item that sets the current theme
+			String name = theme.getName();
+			name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+			MenuItem miTheme = new MenuItem(name);
+			mnTheme.getItems().add(miTheme);
+			// Disable if the theme is the currently active one
+			if(theme == helper.getTheme()) {
+				miTheme.setDisable(true);
+			} else {
+				miTheme.setOnAction(e -> {
+					helper.setTheme(theme);
+					updateRulesPane();
+					updateCSS();
+					updateHTML();
+				});
+			}
+		}
+		mnTheme.getItems().add(new SeparatorMenuItem());
+		MenuItem mnNew = new MenuItem("New Theme...");
+		mnNew.setOnAction(e -> {
+			TextField txtName = new TextField();
+			txtName.setPromptText("Name");
+			ValidationSupport valiation = new ValidationSupport();
+			Platform.runLater(() -> {
+				valiation.registerValidator(txtName, createEmptyValidator("Name cannot be empty"));
+			});
+			// Create dialog
+			Dialog<String> dialog = new Dialog<>();
+			dialog.setTitle("New Theme");
+			valiation.invalidProperty().addListener((ob, o, n) -> {
+				dialog.getDialogPane().lookupButton(ButtonType.OK).setDisable(n);
+			});
+			dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+			dialog.getDialogPane().setContent(txtName);
+			dialog.setResultConverter(dialogButton -> {
+				if(dialogButton == ButtonType.OK) {
+					return txtName.getText();
+				}
+				return null;
+			});
+			Optional<String> result = dialog.showAndWait();
+			if(result.isPresent()) {
+				Theme theme = new Theme();
+				theme.setName(result.get());
+				helper.getLanguage().addTheme(theme);
+				helper.setTheme(theme);
+				updateThemeMenu();
+			}
+		});
+		mnTheme.getItems().add(mnNew);
+	}
+
+	/**
 	 * Reset the config pane. Shows the rules of the currently active language.
 	 */
-	private void updateConfigPane() {
+	private void updateRulesPane() {
 		ListView<Rule> view = new ListView<>();
 		view.getItems().addAll(helper.getRules());
 		view.setCellFactory(v -> new RuleCell());
 		view.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		GridPane configInputs = new GridPane();
+		GridPane gridRuleBtns = new GridPane();
 		Button btnAdd = new Button("New Rule");
 		Button btnRemove = new Button("Remove Selected");
 		Button btnUp = new Button("Move Up");
@@ -294,10 +356,10 @@ public class Java2Html extends Application {
 		btnRemove.setDisable(true);
 		btnUp.setDisable(true);
 		btnDown.setDisable(true);
-		configInputs.add(btnAdd, 0, 0);
-		configInputs.add(btnRemove, 1, 0);
-		configInputs.add(btnUp, 2, 0);
-		configInputs.add(btnDown, 3, 0);
+		gridRuleBtns.add(btnAdd, 0, 0);
+		gridRuleBtns.add(btnRemove, 1, 0);
+		gridRuleBtns.add(btnUp, 2, 0);
+		gridRuleBtns.add(btnDown, 3, 0);
 		view.getSelectionModel().selectedItemProperty().addListener((ob, o, n) -> {
 			btnRemove.setDisable(n == null);
 			// Moving
@@ -309,7 +371,7 @@ public class Java2Html extends Application {
 			helper.getRules().clear();
 			for(Rule rule : view.getItems())
 				helper.addRule(rule);
-			txtCSS.setText(helper.getPatternCSS() + css);
+			updateCSS();
 			updateHTML();
 		});
 		btnAdd.setOnAction(e -> {
@@ -381,8 +443,8 @@ public class Java2Html extends Application {
 			view.getSelectionModel().select(i + 1);
 			previewLock = true;
 		});
-		config.setCenter(view);
-		config.setBottom(configInputs);
+		patternsPane.setCenter(view);
+		patternsPane.setBottom(gridRuleBtns);
 	}
 
 	/**
@@ -392,6 +454,13 @@ public class Java2Html extends Application {
 		String name = helper.getLanguage().getName();
 		name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
 		stage.setTitle(name + "2Html");
+	}
+
+	/**
+	 * Update CSS text.
+	 */
+	private void updateCSS() {
+		txtCSS.setText(helper.getPatternCSS() + css);
 	}
 
 	/**
