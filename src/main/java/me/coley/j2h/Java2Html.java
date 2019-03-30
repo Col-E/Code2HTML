@@ -349,6 +349,7 @@ public class Java2Html extends Application {
 				miTheme.setOnAction(e -> {
 					helper.setTheme(theme);
 					updateRulesPane();
+					updateThemeMenu();
 					updateCSS();
 					updateHTML();
 				});
