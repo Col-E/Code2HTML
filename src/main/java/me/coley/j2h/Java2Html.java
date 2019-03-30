@@ -142,6 +142,10 @@ public class Java2Html extends Application {
 		Tab tabCSS = new Tab("CSS", txtCSS);
 		Tab tabJS = new Tab("JS", txtJS);
 		Tab tabPatterns = new Tab("Patterns", patternsPane);
+		tabHTML.setClosable(false);
+		tabCSS.setClosable(false);
+		tabJS.setClosable(false);
+		tabPatterns.setClosable(false);
 		tabHTML.getStyleClass().add("tab-small");
 		tabCSS.getStyleClass().add("tab-small");
 		tabJS.getStyleClass().add("tab-small");
