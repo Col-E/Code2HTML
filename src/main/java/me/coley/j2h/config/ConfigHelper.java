@@ -101,6 +101,9 @@ public class ConfigHelper {
 	 * @return Compiled regex pattern from {@link #getRules() all existing rules}.
 	 */
 	public Pattern getPattern() {
+		if (getRules().isEmpty()) {
+			return new Pattern("({EMPTY}EMPTY)");
+		}
 		StringBuilder sb = new StringBuilder();
 		for(Rule rule : getRules())
 			sb.append("({" + rule.getPatternGroupName() + "}" + rule.getPattern() + ")|");

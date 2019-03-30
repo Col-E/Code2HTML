@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
@@ -273,13 +274,57 @@ public class Java2Html extends Application {
 				miLang.setOnAction(e -> {
 					helper.setLanguage(language);
 					helper.setTheme(language.getThemes().get(0));
+					updateCSS();
+					updateHTML();
+					updateLanguageMenu();
+					updateThemeMenu();
 					updateRulesPane();
 					updateThemeMenu();
-					updateHTML();
 					updateTitle();
 				});
 			}
 		}
+		mnLang.getItems().add(new SeparatorMenuItem());
+		MenuItem mnNew = new MenuItem("New Language...");
+		mnNew.setOnAction(e -> {
+			TextField txtName = new TextField();
+			txtName.setPromptText("Name");
+			ValidationSupport valiation = new ValidationSupport();
+			Platform.runLater(() -> {
+				valiation.registerValidator(txtName, createEmptyValidator("Name cannot be empty"));
+			});
+			// Create dialog
+			Dialog<String> dialog = new Dialog<>();
+			dialog.setTitle("New Language");
+			valiation.invalidProperty().addListener((ob, o, n) -> {
+				dialog.getDialogPane().lookupButton(ButtonType.OK).setDisable(n);
+			});
+			dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+			dialog.getDialogPane().setContent(txtName);
+			dialog.setResultConverter(dialogButton -> {
+				if(dialogButton == ButtonType.OK) {
+					return txtName.getText();
+				}
+				return null;
+			});
+			Optional<String> result = dialog.showAndWait();
+			if(result.isPresent()) {
+				Language language = new Language(result.get());
+				Theme theme = new Theme();
+				theme.setName("default");
+				language.addTheme(theme);
+				helper.getConfiguration().addLanguage(language);
+				helper.setLanguage(language);
+				helper.setTheme(theme);
+				updateCSS();
+				updateHTML();
+				updateRulesPane();
+				updateLanguageMenu();
+				updateThemeMenu();
+				updateTitle();
+			}
+		});
+		mnLang.getItems().add(mnNew);
 	}
 
 	/**
@@ -373,6 +418,72 @@ public class Java2Html extends Application {
 				helper.addRule(rule);
 			updateCSS();
 			updateHTML();
+		});
+		view.setOnMouseClicked(e -> {
+			if(e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount() == 2){
+				Rule selected = view.getSelectionModel().getSelectedItem();
+				// Inputs
+				TextField txtName = new TextField(selected.getName());
+				txtName.setPromptText("Name");
+				TextField txtRegex = new TextField(selected.getPattern());
+				txtRegex.setPromptText("Regex pattern");
+				ValidationSupport valiation = new ValidationSupport();
+				Platform.runLater(() -> {
+					valiation.registerValidator(txtName, createEmptyValidator("Name cannot be empty"));
+					valiation.registerValidator(txtRegex, createPredicateValidator(s -> {
+						try {
+							new Pattern(txtRegex.getText());
+							return true;
+						} catch(Exception ex) {
+							return false;
+						}
+					}, "Regex pattern must compile with JRegex"));
+				});
+				// Setup grid
+				GridPane grid = new GridPane();
+				grid.setHgap(10);
+				grid.setVgap(10);
+				grid.setPadding(new Insets(20, 150, 10, 10));
+				grid.add(new Label("Name:"), 0, 0);
+				grid.add(txtName, 1, 0);
+				grid.add(new Label("Regex:"), 0, 1);
+				grid.add(txtRegex, 1, 1);
+				Platform.runLater(() -> txtName.requestFocus());
+				// Create dialog
+				Dialog<Pair<String, String>> dialog = new Dialog<>();
+				dialog.setTitle("Edit Regex Rule");
+				valiation.invalidProperty().addListener((ob, o, n) -> {
+					dialog.getDialogPane().lookupButton(ButtonType.OK).setDisable(n);
+				});
+				dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+				dialog.getDialogPane().setContent(grid);
+				dialog.setResultConverter(dialogButton -> {
+					if(dialogButton == ButtonType.OK) {
+						return new Pair<>(txtName.getText(), txtRegex.getText());
+					}
+					return null;
+				});
+				Optional<Pair<String, String>> result = dialog.showAndWait();
+				if(result.isPresent()) {
+					Pair<String, String> pair = result.get();
+					String old = selected.getName();
+					String rename = pair.getKey();
+					if (!old.equals(rename)) {
+						// Rename the rule
+						selected.setName(rename);
+						helper.getLanguage().getThemes().forEach(theme -> {
+							theme.getStyles().stream()
+									.filter(prop -> prop.getTargetRule().equals(old))
+									.forEach(prop -> prop.setTargetRule(rename));
+						});
+					}
+					// Update pattern and other ui views
+					selected.setPattern(pair.getValue());
+					updateCSS();
+					updateHTML();
+					updateRulesPane();
+				}
+			}
 		});
 		btnAdd.setOnAction(e -> {
 			// Inputs
