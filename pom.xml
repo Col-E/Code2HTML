@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>me.coley</groupId>
 	<artifactId>java2html</artifactId>
-	<version>3.0.1</version>
+	<version>3.1.0</version>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		<dependency>
