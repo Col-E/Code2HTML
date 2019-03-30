@@ -311,6 +311,7 @@ public class Java2Html extends Application {
 				}
 				return null;
 			});
+			Platform.runLater(() -> txtName.requestFocus());
 			Optional<String> result = dialog.showAndWait();
 			if(result.isPresent()) {
 				Language language = new Language(result.get());
@@ -378,6 +379,7 @@ public class Java2Html extends Application {
 				}
 				return null;
 			});
+			Platform.runLater(() -> txtName.requestFocus());
 			Optional<String> result = dialog.showAndWait();
 			if(result.isPresent()) {
 				Theme theme = new Theme();
