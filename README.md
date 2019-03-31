@@ -27,4 +27,5 @@ See the [releases](https://github.com/Col-E/Java2HTML/releases) page for the lat
 * [Apache Commons Text](https://commons.apache.org/proper/commons-text/)
 * [ControlsFX](https://github.com/controlsfx/controlsfx)
 * [JRegex](http://jregex.sourceforge.net/)
+* [picocli](https://picocli.info/)
 * [Lombok](https://projectlombok.org/)

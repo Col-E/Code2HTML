@@ -93,7 +93,7 @@ public class Java2Html extends Application implements Callable<Void> {
 	private static void invokeCmd(String[] args) {
 		// Disable System.err so that GUI invokes don't print command-line usage
 		PrintStream ps = System.err;
-		System.setErr(new PrintStream(new ByteArrayOutputStream()));
+		// System.setErr(new PrintStream(new ByteArrayOutputStream()));
 		// Call CLI
 		// If the input argument is missing, it won't even be invoked.
 		CommandLine.call(new Java2Html(),ps, args);
