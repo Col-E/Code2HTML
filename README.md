@@ -8,7 +8,7 @@ The CSS and _optional JS_ are available in the other tabs in the top-right. Upda
 * **HTML**: The HTML output.
 * **CSS**: The CSS code that styles the HTML span tags.
 * **JS**: Optional JS for manual inclusion of collapse-sections.
-* **Configuration**: List of Regex groups for the currently loaded language. 
+* **Patterns**: List of Regex groups for the currently loaded language. 
 
 While the JS is not necessary it allows you to make portions of the code collapseable.
 
