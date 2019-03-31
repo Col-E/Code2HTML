@@ -32,10 +32,11 @@ public class Configuration {
 	 * @param name
 	 * 		Language identifier.
 	 *
-	 * @return Languages matching the given name.
+	 * @return Language matching the given name.
 	 */
-	public Language findByName(String name) {
-		return languages.stream().filter(l -> l.getName().equalsIgnoreCase(name)).findFirst()
-				.orElse(null);
+	public Language findLanguage(String name) {
+		return languages.stream()
+				.filter(l -> l.getName().equalsIgnoreCase(name))
+				.findFirst().orElse(null);
 	}
 }

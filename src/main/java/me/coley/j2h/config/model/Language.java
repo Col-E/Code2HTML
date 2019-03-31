@@ -64,4 +64,16 @@ public class Language {
 	public void addTheme(Theme theme) {
 		this.themes.add(theme);
 	}
+
+	/**
+	 * @param name
+	 * 		Theme identifier.
+	 *
+	 * @return Theme matching the given name.
+	 */
+	public Theme findTheme(String name) {
+		return themes.stream()
+				.filter(t -> t.getName().equalsIgnoreCase(name))
+				.findFirst().orElse(null);
+	}
 }

@@ -7,7 +7,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseButton;
+import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
@@ -20,16 +20,18 @@ import jregex.Pattern;
 import me.coley.j2h.config.*;
 import me.coley.j2h.config.model.*;
 import me.coley.j2h.ui.RuleCell;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.validation.ValidationSupport;
+import picocli.CommandLine;
+import picocli.CommandLine.Option;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.Callable;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.controlsfx.validation.Validator.createEmptyValidator;
@@ -40,20 +42,33 @@ import static org.controlsfx.validation.Validator.createPredicateValidator;
  *
  * @author Matt
  */
-public class Java2Html extends Application {
+public class Java2Html extends Application implements Callable<Void> {
 	// Base values
 	private static String css = "";
 	private static String js = "";
+	// Command line options/args
+	@Option(names = {"-c", "--config"}, description = "Config to with languages and themes")
+	private File clConfig;
+	@Option(names = {"-l", "--language"}, description = "Language in config to use for parsing")
+	private String clLanguage;
+	@Option(names = {"-t", "--theme"}, description = "Theme in config to use for styling")
+	private String clTheme;
+	@Option(names = {"-v", "--clipboard"}, description = "Copy output to clipboard")
+	private boolean clClipboard;
+	@Option(names = {"-o", "--out"}, description = "The file to output converted HTML to")
+	private File clOutput;
+	@CommandLine.Parameters(index = "0", description = "The file to convert to styled HTML")
+	private File clInput;
 	// Controls
-	private final WebView browser = new WebView();
-	private final TextArea txtInput = new TextArea();
-	private final TextArea txtHTML = new TextArea();
-	private final TextArea txtCSS = new TextArea();
-	private final TextArea txtJS = new TextArea();
+	private WebView browser;
+	private TextArea txtInput;
+	private TextArea txtHTML;
+	private TextArea txtCSS;
+	private TextArea txtJS;
 	// Misc layout & stuff
-	private final Menu mnLang = new Menu("Language");
-	private final Menu mnTheme = new Menu("Theme");
-	private final BorderPane patternsPane = new BorderPane();
+	private Menu mnLang;
+	private Menu mnTheme;
+	private BorderPane patternsPane;
 	private Stage stage;
 	private boolean previewLock;
 	// Config
@@ -65,11 +80,74 @@ public class Java2Html extends Application {
 			css = IOUtils.toString(Java2Html.class.getResourceAsStream("/code.css"), UTF_8);
 			js = IOUtils.toString(Java2Html.class.getResourceAsStream("/code.js"), UTF_8);
 		} catch(Exception e) {
-			System.err.println("Failed to load default resources: css/js");
 			e.printStackTrace();
+			System.err.println("Failed to load default resources: css/js");
 			System.exit(-1);
 		}
+		// Check command line values
+		invokeCmd(args);
+		// Invoke GUI if command line doesn't terminate
 		launch(args);
+	}
+
+	private static void invokeCmd(String[] args) {
+		// Disable System.err so that GUI invokes don't print command-line usage
+		PrintStream ps = System.err;
+		System.setErr(new PrintStream(new ByteArrayOutputStream()));
+		// Call CLI
+		// If the input argument is missing, it won't even be invoked.
+		CommandLine.call(new Java2Html(),ps, args);
+		// Reset err
+		System.setErr(ps);
+	}
+
+	@Override
+	public Void call() {
+		try {
+			// Verification
+			if (clOutput == null && !clClipboard) {
+				System.out.println("No output for converted content");
+				System.exit(0);
+			}
+			if (!clInput.exists()) {
+				System.out.println("Input file does not exist");
+				System.exit(0);
+			}
+			// Setup
+			Configuration configuration = clConfig == null ? Importer.importDefault() : Importer.importFromFile(clConfig.getAbsolutePath());
+			Language language = clLanguage == null ? configuration.getLanguages().get(0) : configuration.findLanguage(clLanguage);
+			Theme theme = clTheme == null ? language.getThemes().get(0) : language.findTheme(clTheme);
+			helper = new ConfigHelper(configuration, language, theme);
+			// Input reading & parsing
+			String text = FileUtils.readFileToString(clInput, UTF_8);
+			String converted = helper.convert(text);
+			// Output
+			Platform.runLater(() -> {
+				if(clClipboard) {
+					Clipboard clip = Clipboard.getSystemClipboard();
+					clip.clear();
+					Map<DataFormat, Object> content = new HashMap<>();
+					content.put(DataFormat.PLAIN_TEXT, converted);
+					clip.setContent(content);
+				}
+				if(clOutput != null) {
+					try {
+						FileUtils.write(clOutput, converted, UTF_8);
+					} catch(IOException e) {
+						System.out.println("Failed to write to file: " + clOutput);
+						System.out.println(e.getMessage());
+					}
+				}
+				Platform.exit();
+			});
+		} catch(JAXBException e) {
+			System.out.println("Failed to parse config: " + clConfig);
+			System.out.println(e.getMessage());
+		} catch(IOException e) {
+			System.out.println("Failed to read from config: " + clConfig);
+			System.out.println(e.getMessage());
+		}
+		return null;
 	}
 
 	@Override
@@ -87,6 +165,14 @@ public class Java2Html extends Application {
 					"The default configuration file failed to be read.",
 					"Please ensure the default configuration file is properly formatted.");
 		}
+		browser = new WebView();
+		txtInput = new TextArea();
+		txtHTML = new TextArea();
+		txtCSS = new TextArea();
+		txtJS = new TextArea();
+		mnLang = new Menu("Language");
+		mnTheme = new Menu("Theme");
+		patternsPane = new BorderPane();
 		// Inputs
 		txtInput.setText("class Example { \n\t// put source code here\n}");
 		txtInput.setFont(Font.font("monospace"));

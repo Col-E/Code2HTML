@@ -1,6 +1,7 @@
 package me.coley.j2h.config;
 
 import me.coley.j2h.config.model.Configuration;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import javax.xml.bind.*;
@@ -34,7 +35,7 @@ public final class Importer {
 	public static Configuration importFromFile(String path) throws JAXBException, IOException {
 		JAXBContext context = JAXBContext.newInstance(Configuration.class);
 		Unmarshaller um = context.createUnmarshaller();
-		return (Configuration) um.unmarshal(new StringReader(readFile(path, UTF_8)));
+		return (Configuration) um.unmarshal(new StringReader(FileUtils.readFileToString(new File(path), UTF_8)));
 	}
 
 	/**
@@ -76,21 +77,5 @@ public final class Importer {
 				return importFromText(new String(data, UTF_8));
 		}
 		throw new IOException("Default configuration location unknown");
-	}
-
-	/**
-	 * @param path
-	 * 		Path to file.
-	 * @param encoding
-	 * 		File encoding.
-	 *
-	 * @return Content of file.
-	 *
-	 * @throws IOException
-	 * 		Thrown if the file could not be read from.
-	 */
-	private static String readFile(String path, Charset encoding) throws IOException {
-		byte[] encoded = Files.readAllBytes(Paths.get(path));
-		return new String(encoded, encoding);
 	}
 }
