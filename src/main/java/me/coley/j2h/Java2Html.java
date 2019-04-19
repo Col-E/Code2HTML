@@ -59,6 +59,8 @@ public class Java2Html extends Application implements Callable<Void> {
 	private File clOutput;
 	@CommandLine.Parameters(index = "0", description = "The file to convert to styled HTML")
 	private File clInput;
+	// Boolean indicating if CLI has priority over GUI
+	private boolean cliExecution;
 	// Controls
 	private WebView browser;
 	private TextArea txtInput;
@@ -85,25 +87,36 @@ public class Java2Html extends Application implements Callable<Void> {
 			System.exit(-1);
 		}
 		// Check command line values
-		invokeCmd(args);
+		boolean executed = invokeCmd(args);
 		// Invoke GUI if command line doesn't terminate
-		launch(args);
+		if (!executed) {
+			launch(args);
+		}
 	}
 
-	private static void invokeCmd(String[] args) {
+	private static boolean invokeCmd(String[] args) {
 		// Disable System.err so that GUI invokes don't print command-line usage
 		PrintStream ps = System.err;
-		// System.setErr(new PrintStream(new ByteArrayOutputStream()));
+		System.setErr(new PrintStream(new ByteArrayOutputStream()));
 		// Call CLI
 		// If the input argument is missing, it won't even be invoked.
-		CommandLine.call(new Java2Html(),ps, args);
+		Java2Html cli = new Java2Html();
+		CommandLine.call(cli, ps, args);
 		// Reset err
 		System.setErr(ps);
+		return cli.cliExecution;
 	}
 
 	@Override
 	public Void call() {
 		try {
+			// Skip if no output flags
+			if(!clClipboard && clOutput == null) {
+				return null;
+			} else {
+				// Mark that CLI will be used instead of GUI
+				cliExecution = true;
+			}
 			// Verification
 			if (clOutput == null && !clClipboard) {
 				System.out.println("No output for converted content");
