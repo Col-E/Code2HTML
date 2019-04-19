@@ -16,6 +16,8 @@ While the JS is not necessary it allows you to make portions of the code collaps
 
 See the [releases](https://github.com/Col-E/Java2HTML/releases) page for the latest build. Or compile with maven via `mvn package`
 
+**Note**: Builds are based off of Java 8. Running on later version will not work, please see [the update guide](UPDATING-JDK.md) for more information.
+
 ## Screenshots
 
 * ![Main View](ss-html.png)
