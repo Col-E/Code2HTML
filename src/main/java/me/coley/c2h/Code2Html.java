@@ -698,7 +698,7 @@ public class Code2Html extends Application implements Callable<Void> {
 		StringBuilder sbWeb = new StringBuilder();
 		sbWeb.append("<html><head><style>");
 		sbWeb.append(style);
-		sbWeb.append("</style></head><body><h2 style=\"font-family: sans-serif;\">Preview</h2>");
+		sbWeb.append("</style></head><body>");
 		sbWeb.append(html);
 		sbWeb.append("</body></html>");
 		browser.getEngine().loadContent(sbWeb.toString());
