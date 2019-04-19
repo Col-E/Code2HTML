@@ -655,12 +655,12 @@ public class Java2Html extends Application implements Callable<Void> {
 			previewLock = false;
 		});
 		btnDown.setOnAction(e -> {
-			int i = view.getSelectionModel().getSelectedIndex();
-			previewLock = false;
-			Collections.swap(helper.getRules(), i, i + 1);
-			Collections.swap(view.getItems(), i, i + 1);
-			view.getSelectionModel().select(i + 1);
+			int i = view.getSelectionModel().getSelectedIndex() + 1;
 			previewLock = true;
+			Collections.swap(helper.getRules(), i, i - 1);
+			Collections.swap(view.getItems(), i, i - 1);
+			view.getSelectionModel().select(i);
+			previewLock = false;
 		});
 		patternsPane.setCenter(view);
 		patternsPane.setBottom(gridRuleBtns);
