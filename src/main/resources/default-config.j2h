@@ -17,10 +17,10 @@
 			<pattern>//[^\n]+</pattern>
 		</rule>
 		<rule name="javadoc-comment">
-			<pattern>/[*]{2}(.|\n|\n)+?\*/</pattern>
+			<pattern>/[*]{2}(.|\n)+?\*/</pattern>
 		</rule>
 		<rule name="multi-line-comment">
-			<pattern>/[*](.|\n|\n)+?\*/</pattern>
+			<pattern>/[*](.|\n)+?\*/</pattern>
 		</rule>
 		<themes>
 			<theme name="clean">
@@ -36,6 +36,48 @@
 				<style targetRule="multi-line-comment" key="font-style" value="italic" />
 				<style targetRule="javadoc-comment" key="color" value="rgb(0, 100, 114)" />
 				<style targetRule="javadoc-comment" key="font-style" value="italic" />
+			</theme>
+		</themes>
+	</language>
+	<language name="Css">
+		<rule name="comment">
+			<pattern>/[*]+(.|\n)+?\*/</pattern>
+		</rule>
+		<rule name="attribute">
+			<pattern>(?!\s+)[\w-]+(?=:)</pattern>
+		</rule>
+		<rule name="string">
+			<pattern>\"([^"\\]|\\.)*\"</pattern>
+		</rule>
+		<rule name="string-single">
+			<pattern>\'([^'\\]|\\.)*\'</pattern>
+		</rule>
+		<rule name="numeric-constant">
+			<pattern>[\d.]+px|[\d.]+%|[\d.]+em|[\d.]+deg|#\w+|\d+</pattern>
+		</rule>
+		<rule name="keywords">
+			<pattern>\b(auto|rgb|rgba|transparent|visible|hidden|nowrap|left|right|center|justify|static|relative|fixed|absolute|sticky|block|inline|inline-block|none|dotted|dashed|solid|double|groove |ridge|inset|outset|none|hidden|black|silver|gray|white|maroon|red|purple|fuchsia|green|lime|olive|yellow|navy|blue|teal|aqua|antiquewhite|aquamarine|azure|beige|bisque|blanchedalmond|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkgrey|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkslategrey|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dimgrey|dodgerblue|firebrick|floralwhite|forestgreen|gainsboro|ghostwhite|gold|goldenrod|greenyellow|grey|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgreen|lightgrey|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightslategrey|lightsteelblue|lightyellow|limegreen|linen|magenta|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|oldlace|olivedrab|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|skyblue|slateblue|slategray|slategrey|snow|springgreen|steelblue|tan|thistle|tomato|turquoise|violet|wheat|whitesmoke|yellowgreen)\b</pattern>
+		</rule>
+		<rule name="at-rule">
+			<pattern>@\w+</pattern>
+		</rule>
+		<rule name="rule">
+			<pattern>\w+(?=.*\{\W*)</pattern>
+		</rule>
+		<themes>
+			<theme name="clean">
+				<style targetRule="comment" key="color" value="rgb(0, 111, 12)" />
+				<style targetRule="comment" key="font-style" value="italic" />
+				<style targetRule="attribute" key="color" value="rgb(127, 0, 85)"/>
+				<style targetRule="string" key="color" value="rgb(47, 100, 31)" />
+				<style targetRule="string" key="font-weight" value="italic" />
+				<style targetRule="string-single" key="color" value="rgb(47, 100, 31)" />
+				<style targetRule="string-single" key="font-weight" value="italic" />
+				<style targetRule="numeric-constant" key="color" value="rgb(173, 53, 0)" />
+				<style targetRule="keywords" key="color" value="rgb(173, 53, 0)" />
+				<style targetRule="at-rule" key="color" value="rgb(59, 79, 119)" />
+				<style targetRule="rule" key="color" value="rgb(0, 55, 100)" />
+				<style targetRule="rule" key="font-weight" value="bold" />
 			</theme>
 		</themes>
 	</language>
