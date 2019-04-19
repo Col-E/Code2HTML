@@ -1,4 +1,4 @@
-package me.coley.j2h.config.model;
+package me.coley.c2h.config.model;
 
 import lombok.*;
 

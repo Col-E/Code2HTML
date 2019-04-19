@@ -1,10 +1,10 @@
-package me.coley.j2h.config;
+package me.coley.c2h.config;
 
 import jregex.Matcher;
 import jregex.Pattern;
 import lombok.Getter;
 import lombok.Setter;
-import me.coley.j2h.config.model.*;
+import me.coley.c2h.config.model.*;
 
 import java.util.List;
 

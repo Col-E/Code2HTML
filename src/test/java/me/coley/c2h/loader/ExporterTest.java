@@ -1,18 +1,17 @@
-package me.coley.j2h.loader;
+package me.coley.c2h.loader;
 
-import me.coley.j2h.config.Importer;
-import me.coley.j2h.config.model.*;
+import me.coley.c2h.config.Exporter;
+import me.coley.c2h.config.Importer;
+import me.coley.c2h.config.model.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-public class ImporterTest {
+public class ExporterTest {
 	private Configuration configuration;
 
 	@Before
@@ -30,15 +29,14 @@ public class ImporterTest {
 	}
 
 	@Test
-	public void testNonEmpty() {
-		for(Language lang : configuration.getLanguages()) {
-			// No nulls allows in language models
-			assertNotNull(lang.getName());
-			assertNotNull(lang.getRules());
-			assertNotNull(lang.getThemes());
-			// Some content exists
-			assertTrue(!lang.getRules().isEmpty());
-			assertTrue(!lang.getThemes().isEmpty());
+	public void testExport() {
+		try {
+			String confStr = Exporter.toString(configuration);
+			assertNotNull(confStr);
+			Configuration copy = Importer.importFromText(confStr);
+			assertArrayEquals(configuration.getLanguages().toArray(), copy.getLanguages().toArray());
+		} catch(JAXBException e) {
+			fail("testExport: JAXBException" + e.getMessage());
 		}
 	}
 }

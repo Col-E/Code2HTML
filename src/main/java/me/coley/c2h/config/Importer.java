@@ -1,13 +1,12 @@
-package me.coley.j2h.config;
+package me.coley.c2h.config;
 
-import me.coley.j2h.config.model.Configuration;
+import me.coley.c2h.config.model.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import javax.xml.bind.*;
 import java.io.*;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.nio.file.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -18,7 +17,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * @author Geoff Hayward
  */
 public final class Importer {
-	private final static String DEFAULT_CONF = "default-config.j2h";
+	private final static String DEFAULT_CONF = "default-config.c2h";
 
 	/**
 	 * @param path

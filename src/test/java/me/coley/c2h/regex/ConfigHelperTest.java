@@ -1,8 +1,8 @@
-package me.coley.j2h.regex;
+package me.coley.c2h.regex;
 
-import me.coley.j2h.config.ConfigHelper;
-import me.coley.j2h.config.Importer;
-import me.coley.j2h.config.model.*;
+import me.coley.c2h.config.ConfigHelper;
+import me.coley.c2h.config.Importer;
+import me.coley.c2h.config.model.*;
 import org.junit.Before;
 import org.junit.Test;
 

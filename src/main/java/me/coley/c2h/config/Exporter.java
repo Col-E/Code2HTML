@@ -1,6 +1,6 @@
-package me.coley.j2h.config;
+package me.coley.c2h.config;
 
-import me.coley.j2h.config.model.Configuration;
+import me.coley.c2h.config.model.Configuration;
 
 import javax.xml.bind.*;
 import java.io.IOException;

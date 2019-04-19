@@ -1,4 +1,4 @@
-package me.coley.j2h;
+package me.coley.c2h;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -17,9 +17,9 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import jregex.Matcher;
 import jregex.Pattern;
-import me.coley.j2h.config.*;
-import me.coley.j2h.config.model.*;
-import me.coley.j2h.ui.RuleCell;
+import me.coley.c2h.config.*;
+import me.coley.c2h.config.model.*;
+import me.coley.c2h.ui.RuleCell;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.validation.ValidationSupport;
@@ -43,7 +43,7 @@ import static org.controlsfx.validation.Validator.createPredicateValidator;
  *
  * @author Matt
  */
-public class Java2Html extends Application implements Callable<Void> {
+public class Code2Html extends Application implements Callable<Void> {
 	// Base values
 	private static String css = "";
 	private static String js = "";
@@ -80,8 +80,8 @@ public class Java2Html extends Application implements Callable<Void> {
 
 	public static void main(String[] args) {
 		try {
-			css = IOUtils.toString(Java2Html.class.getResourceAsStream("/code.css"), UTF_8);
-			js = IOUtils.toString(Java2Html.class.getResourceAsStream("/code.js"), UTF_8);
+			css = IOUtils.toString(Code2Html.class.getResourceAsStream("/code.css"), UTF_8);
+			js = IOUtils.toString(Code2Html.class.getResourceAsStream("/code.js"), UTF_8);
 		} catch(Exception e) {
 			e.printStackTrace();
 			System.err.println("Failed to load default resources: css/js");
@@ -101,7 +101,7 @@ public class Java2Html extends Application implements Callable<Void> {
 		System.setErr(new PrintStream(new ByteArrayOutputStream()));
 		// Call CLI
 		// If the input argument is missing, it won't even be invoked.
-		Java2Html cli = new Java2Html();
+		Code2Html cli = new Code2Html();
 		CommandLine.call(cli, ps, args);
 		// Reset err
 		System.setErr(ps);
@@ -259,7 +259,7 @@ public class Java2Html extends Application implements Callable<Void> {
 		MenuItem miConfigLoad = new MenuItem("Load config...");
 		MenuItem miConfigSave = new MenuItem("Save config...");
 		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Configurations",
-				"*.j2h", "*.xml");
+				"*.c2h", "*.xml");
 		FileChooser fcSave = new FileChooser();
 		fcSave.setInitialDirectory(new File(System.getProperty("user.dir")));
 		fcSave.setTitle("Save configuration");

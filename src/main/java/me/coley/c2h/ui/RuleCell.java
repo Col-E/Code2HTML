@@ -1,9 +1,9 @@
-package me.coley.j2h.ui;
+package me.coley.c2h.ui;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.GridPane;
-import me.coley.j2h.config.model.Rule;
+import me.coley.c2h.config.model.Rule;
 
 /**
  * ListCell for displaying language rules.
