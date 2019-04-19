@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.controlsfx.validation.Validator.createEmptyValidator;
@@ -361,7 +362,9 @@ public class Java2Html extends Application implements Callable<Void> {
 	 */
 	private void updateLanguageMenu() {
 		mnLang.getItems().clear();
-		for(Language language : helper.getConfiguration().getLanguages()) {
+		List<Language> sorted = helper.getConfiguration().getLanguages()
+				.stream().sorted().collect(Collectors.toList());
+		for(Language language : sorted) {
 			// Skip language if it has no theme
 			if(language.getThemes().isEmpty())
 				continue;

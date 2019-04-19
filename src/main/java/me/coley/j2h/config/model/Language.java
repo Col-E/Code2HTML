@@ -15,7 +15,7 @@ import java.util.List;
  */
 @EqualsAndHashCode
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Language {
+public class Language implements Comparable<Language> {
 	/**
 	 * Rules for matching against language features.
 	 */
@@ -75,5 +75,10 @@ public class Language {
 		return themes.stream()
 				.filter(t -> t.getName().equalsIgnoreCase(name))
 				.findFirst().orElse(null);
+	}
+
+	@Override
+	public int compareTo(Language other) {
+		return getName().toLowerCase().compareTo(other.getName().toLowerCase());
 	}
 }
