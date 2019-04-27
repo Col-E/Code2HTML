@@ -4,9 +4,12 @@ import jregex.Matcher;
 import jregex.Pattern;
 import lombok.Getter;
 import lombok.Setter;
+import me.coley.c2h.Code2Html;
 import me.coley.c2h.config.model.*;
+import me.coley.c2h.util.Regex;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 
@@ -67,14 +70,14 @@ public class ConfigHelper {
 	 * @param text
 	 * 		Text to convert into HTML.
 	 *
+	 * @param inline
 	 * @return HTML of the text with matched attributes of the {@link #language current language}.
 	 */
-	public String convert(String text) {
+	public String convert(String text, boolean inline) {
 		Matcher matcher = getPattern().matcher(text);
 		StringBuilder sb = new StringBuilder();
 		int lastEnd = 0;
 		while(matcher.find()) {
-			String styleClass = getClassFromGroup(matcher);
 			int start = matcher.start();
 			int end = matcher.end();
 			// append text not matched
@@ -84,17 +87,43 @@ public class ConfigHelper {
 			}
 			// append match
 			String matched = escapeHtml4(text.substring(start, end));
-			sb.append("<span class=\"" + styleClass + "\">" + matched + "</span>");
+			if (inline) {
+				String styleRules = getInlineStyleFromGroup(matcher);
+				sb.append("<span style=\"" + styleRules + "\">" + matched + "</span>");
+			} else {
+				String styleClass = getClassFromGroup(matcher);
+				sb.append("<span class=\"" + styleClass + "\">" + matched + "</span>");
+			}
 			lastEnd = end;
 		}
 		// Append ending text not matched
 		sb.append(escapeHtml4(text.substring(lastEnd)));
 		// Apply line formatting to each line
 		StringBuilder fmt = new StringBuilder();
-		for(String line : sb.toString().split("\n"))
-			fmt.append("<span class=\"line\"></span>" + line + "\n");
-		// Wrap in pre tags and slap it in an HTML page
-		return "<pre>" + fmt.toString() + "</pre>";
+		if(inline) {
+			StringBuilder sbLineStyle = new StringBuilder();
+			StringBuilder sbLinePreStyle = new StringBuilder();
+			Regex.getCssProperties(Code2Html.BASE_CSS, "pre .line").forEach((key, value) -> {
+				sbLineStyle.append(key + ":" + value + ";");
+			});
+			Regex.getCssProperties(Code2Html.BASE_CSS, "pre .line::before").forEach((key, value) -> {
+				sbLinePreStyle.append(key + ":" + value + ";");
+			});
+			int lineNum = 1;
+			for(String line : sb.toString().split("\n"))
+				fmt.append("<span style=\"" +sbLineStyle.toString() + "\"><span style=\"" + sbLinePreStyle.toString() + "\">" + (lineNum++) + "</span></span>" + line + "\n");
+			// Wrap in pre tags and slap it in an HTML page
+			StringBuilder sbPreStyle = new StringBuilder();
+			Regex.getCssProperties(Code2Html.BASE_CSS, "pre").forEach((key, value) -> {
+				sbPreStyle.append(key + ":" + value + ";");
+			});
+			return "<pre style=\"" + sbPreStyle.toString() + "\">" + fmt.toString() + "</pre>";
+		} else {
+			for(String line : sb.toString().split("\n"))
+				fmt.append("<span class=\"line\"></span>" + line + "\n");
+			// Wrap in pre tags and slap it in an HTML page
+			return "<pre>" + fmt.toString() + "</pre>";
+		}
 	}
 
 	/**
@@ -148,5 +177,25 @@ public class ConfigHelper {
 			if(matcher.group(rule.getPatternGroupName()) != null)
 				return rule.getName();
 		return null;
+	}
+
+	/**
+	 * Fetch the CSS style to be used by the matched group.
+	 *
+	 * @param matcher
+	 * 		Matcher that has found a group.
+	 *
+	 * @return CSS inline style.
+	 */
+	public String getInlineStyleFromGroup(Matcher matcher) {
+		for(Rule rule : getRules())
+			if(matcher.group(rule.getPatternGroupName()) != null) {
+				StringBuilder sbStyle = new StringBuilder();
+				theme.getStylesForRule(rule.getName())
+						.forEach(style ->
+								sbStyle.append(style.getKey() + ":" + style.getValue() + ";"));
+				return sbStyle.toString();
+			}
+		return "";
 	}
 }

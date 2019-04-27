@@ -15,11 +15,11 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import jregex.Matcher;
 import jregex.Pattern;
 import me.coley.c2h.config.*;
 import me.coley.c2h.config.model.*;
 import me.coley.c2h.ui.RuleCell;
+import me.coley.c2h.util.Regex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.validation.ValidationSupport;
@@ -45,8 +45,8 @@ import static org.controlsfx.validation.Validator.createPredicateValidator;
  */
 public class Code2Html extends Application implements Callable<Void> {
 	// Base values
-	private static String css = "";
-	private static String js = "";
+	public static String BASE_CSS = "";
+	public static String BASE_JS = "";
 	// Command line options/args
 	@Option(names = {"-c", "--config"}, description = "Config to with languages and themes")
 	private File clConfig;
@@ -58,8 +58,12 @@ public class Code2Html extends Application implements Callable<Void> {
 	private boolean clClipboard;
 	@Option(names = {"-o", "--out"}, description = "The file to output converted HTML to")
 	private File clOutput;
+	@Option(names = {"-i", "--inline"}, description = "Option to make CSS inline with the HTML elements")
+	private boolean clInline;
 	@CommandLine.Parameters(index = "0", description = "The file to convert to styled HTML")
 	private File clInput;
+	// Other options
+	private boolean inline;
 	// Boolean indicating if CLI has priority over GUI
 	private boolean cliExecution;
 	// Controls
@@ -77,11 +81,10 @@ public class Code2Html extends Application implements Callable<Void> {
 	// Config
 	private ConfigHelper helper;
 
-
 	public static void main(String[] args) {
 		try {
-			css = IOUtils.toString(Code2Html.class.getResourceAsStream("/code.css"), UTF_8);
-			js = IOUtils.toString(Code2Html.class.getResourceAsStream("/code.js"), UTF_8);
+			BASE_CSS = IOUtils.toString(Code2Html.class.getResourceAsStream("/code.css"), UTF_8);
+			BASE_JS = IOUtils.toString(Code2Html.class.getResourceAsStream("/code.js"), UTF_8);
 		} catch(Exception e) {
 			e.printStackTrace();
 			System.err.println("Failed to load default resources: css/js");
@@ -134,7 +137,7 @@ public class Code2Html extends Application implements Callable<Void> {
 			helper = new ConfigHelper(configuration, language, theme);
 			// Input reading & parsing
 			String text = FileUtils.readFileToString(clInput, UTF_8);
-			String converted = helper.convert(text);
+			String converted = helper.convert(text, clInline);
 			// Output
 			Platform.runLater(() -> {
 				if(clClipboard) {
@@ -195,7 +198,7 @@ public class Code2Html extends Application implements Callable<Void> {
 		txtJS.setFont(Font.font("monospace"));
 		txtHTML.setEditable(false);
 		updateCSS();
-		txtJS.setText(js);
+		txtJS.setText(BASE_JS);
 		txtInput.textProperty().addListener((ob, o, n) -> {
 			// Update HTML
 			updateHTML();
@@ -210,21 +213,9 @@ public class Code2Html extends Application implements Callable<Void> {
 			if(!old.equalsIgnoreCase(cur)) {
 				// Iterate over css tags (by matching via regex)
 				for(Rule rule : helper.getRules()) {
-					String r = "(\\.({TITLE}" + rule.getName() + ")\\s*\\{({BODY}[^}]*))\\}";
-					Pattern pattern = new Pattern(r);
-					Matcher matcher = pattern.matcher(cur);
-					if(!matcher.find())
-						return;
-					String body = matcher.group("BODY");
-					// Parse the body of the css class and update the regex-rule style map.
-					r = "({key}\\S+):\\s*({value}.+)(?=;)";
-					pattern = new Pattern(r);
-					matcher = pattern.matcher(body);
-					while(matcher.find()) {
-						String key = matcher.group("key");
-						String value = matcher.group("value");
+					Regex.getCssProperties(cur, "." + rule.getName()).forEach((key, value) -> {
 						helper.getTheme().update(rule.getName(), key, value);
-					}
+					});
 				}
 			}
 			// Update HTML
@@ -309,8 +300,17 @@ public class Code2Html extends Application implements Callable<Void> {
 		});
 		mnFile.getItems().addAll(miConfigLoad);
 		mnFile.getItems().addAll(miConfigSave);
+		// TODO: Swap out menu-item for checkbox
+		Menu mnOptions = new Menu("Options");
+		CheckMenuItem miOptionInline = new CheckMenuItem("Inline HTML style");
+		miOptionInline.selectedProperty().addListener((observable, oldValue, newValue) -> {
+			this.inline = newValue.booleanValue();
+			updateHTML();
+		});
+		mnOptions.getItems().addAll(miOptionInline);
+		// inline
 		MenuBar menuBar = new MenuBar();
-		menuBar.getMenus().addAll(mnFile, mnLang, mnTheme);
+		menuBar.getMenus().addAll(mnFile, mnLang, mnTheme, mnOptions);
 		// Layout
 		SplitPane pane = new SplitPane(txtInput, tabs);
 		SplitPane vert = new SplitPane(pane, browser);
@@ -682,7 +682,7 @@ public class Code2Html extends Application implements Callable<Void> {
 	 * Update CSS text.
 	 */
 	private void updateCSS() {
-		txtCSS.setText(helper.getPatternCSS() + css);
+		txtCSS.setText(helper.getPatternCSS() + BASE_CSS);
 	}
 
 	/**
@@ -693,12 +693,14 @@ public class Code2Html extends Application implements Callable<Void> {
 			return;
 		}
 		String text = txtInput.getText().replace("\t", "    ");
-		String html = helper.convert(text);
+		String html = helper.convert(text, inline);
 		String style = txtCSS.getText();
 		StringBuilder sbWeb = new StringBuilder();
-		sbWeb.append("<html><head><style>");
-		sbWeb.append(style);
-		sbWeb.append("</style></head><body>");
+		sbWeb.append("<html><head>");
+		if (!inline) {
+			sbWeb.append("<style>" + style + "</style>");
+		}
+		sbWeb.append("</head><body>");
 		sbWeb.append(html);
 		sbWeb.append("</body></html>");
 		browser.getEngine().loadContent(sbWeb.toString());
