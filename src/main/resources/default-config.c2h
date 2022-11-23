@@ -5,22 +5,22 @@
 			<pattern>\b(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|extends|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|try|var|void|volatile|while)\b</pattern>
 		</rule>
 		<rule name="strings">
-			<pattern>\"([^"\\]|\\.)*\"</pattern>
+			<pattern>(\"(?:[^"\\]|\\.)*?\")|(\'(?:[^'\\]|\\.)*?\')</pattern>
 		</rule>
 		<rule name="constant">
-			<pattern>(0[xX][0-9a-fA-F]+)+|(\b([\d._]*[\d])\b)+|(true|false|null)</pattern>
+			<pattern>(?:0[xX][0-9a-fA-F]+)+|(?:\b([\d._]*[\d])\b)+|\b(?:true|false|null)\b</pattern>
 		</rule>
 		<rule name="annotation">
-			<pattern>\B(@[\w]+)\b</pattern>
+			<pattern>\B(?:@[\w]+)\b</pattern>
 		</rule>
 		<rule name="single-line-comment">
 			<pattern>//[^\n]+</pattern>
 		</rule>
 		<rule name="javadoc-comment">
-			<pattern>/[*]{2}(.|\n)+?\*/</pattern>
+			<pattern>/[*]{2}(?:.|\n)+?\*/</pattern>
 		</rule>
 		<rule name="multi-line-comment">
-			<pattern>/[*](.|\n)+?\*/</pattern>
+			<pattern>/[*](?:.|\n)+?\*/</pattern>
 		</rule>
 		<themes>
 			<theme name="clean">
