@@ -1,11 +1,12 @@
 package me.coley.c2h.config.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A collection of rules that match against a language's feature set and themes to apply distinct
@@ -13,26 +14,10 @@ import java.util.List;
  *
  * @author Geoff Hayward
  */
-@EqualsAndHashCode
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Language implements Comparable<Language> {
-	/**
-	 * Rules for matching against language features.
-	 */
-	@Getter
 	@XmlElement(name = "rule")
-	private List<Rule> rules = new ArrayList<>();
-	/**
-	 * Theme to apply to language. Determines which set of CSS styles are applied to matches.
-	 */
-	@Getter
-	@XmlElementWrapper(name = "themes")
-	@XmlElement(name = "theme")
-	private List<Theme> themes = new ArrayList<>();
-	/**
-	 * Language identifier.
-	 */
-	@Getter
+	private final List<Rule> rules = new ArrayList<>();
 	@XmlAttribute
 	private String name;
 
@@ -56,29 +41,52 @@ public class Language implements Comparable<Language> {
 	}
 
 	/**
-	 * Add a theme to the language.
+	 * @param name
+	 * 		Name of rule to find.
 	 *
-	 * @param theme
-	 * 		Theme to add.
+	 * @return Rule by name, or {@code null} when there is no match.
 	 */
-	public void addTheme(Theme theme) {
-		this.themes.add(theme);
+	public Rule getRule(String name) {
+		return rules.stream()
+				.filter(rule -> rule.getName().equals(name))
+				.findFirst()
+				.orElse(null);
 	}
 
 	/**
-	 * @param name
-	 * 		Theme identifier.
-	 *
-	 * @return Theme matching the given name.
+	 * @return Rules for matching against language features.
 	 */
-	public Theme findTheme(String name) {
-		return themes.stream()
-				.filter(t -> t.getName().equalsIgnoreCase(name))
-				.findFirst().orElse(null);
+	public List<Rule> getRules() {
+		return rules;
+	}
+
+	/**
+	 * @return Language identifier.
+	 */
+	public String getName() {
+		return name;
 	}
 
 	@Override
 	public int compareTo(Language other) {
 		return getName().toLowerCase().compareTo(other.getName().toLowerCase());
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Language language = (Language) o;
+
+		if (!Objects.equals(rules, language.rules)) return false;
+		return Objects.equals(name, language.name);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = rules.hashCode();
+		result = 31 * result + (name != null ? name.hashCode() : 0);
+		return result;
 	}
 }

@@ -1,8 +1,9 @@
 package me.coley.c2h.config.model;
 
-import lombok.Getter;
-
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +15,15 @@ import java.util.List;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Configuration {
-	@Getter
 	@XmlElement(name = "language")
-	private List<Language> languages = new ArrayList<>();
+	private final List<Language> languages = new ArrayList<>();
+
+	/**
+	 * @return Languages supported in the config instance.
+	 */
+	public List<Language> getLanguages() {
+		return languages;
+	}
 
 	/**
 	 * Add a language to the config.

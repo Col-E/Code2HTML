@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration>
+	<language name="Java">
+		<rule name="keywords">
+			<pattern>\b(?:abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|extends|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|try|var|void|volatile|while)\b</pattern>
+		    <style>
+		        <entry key="color" value="rgb(127, 0, 85)" />
+		        <entry key="font-weight" value="bold" />
+		    </style>
+		</rule>
+		<rule name="strings">
+			<pattern>(?:\"(?:[^"\\]|\\.)*?\")|(?:\'(?:[^'\\]|\\.)*?\')</pattern>
+            <style>
+                <entry key="color" value="rgb(50, 100, 30)" />
+                <entry key="font-weight" value="italic" />
+            </style>
+			<subrules>
+				<rule name="escape">
+					<pattern>\\.</pattern>
+					<style>
+						<entry key="color" value="rgb(150, 90, 40)" />
+					</style>
+				</rule>
+			</subrules>
+		</rule>
+		<rule name="constant">
+			<pattern>(?:0[xX][0-9a-fA-F]+)+|(?:\b(?:[\d._]*[\d])\b)+|\b(?:true|false|null)\b</pattern>
+			<style>
+			    <entry key="color" value="rgb(170, 50, 0)" />
+			</style>
+		</rule>
+		<rule name="annotation">
+			<pattern>\B(?:@[\w]+)\b</pattern>
+			<style>
+			    <entry key="color" value="rgb(120, 130, 150)" />
+			</style>
+		</rule>
+		<rule name="todo-line-comment">
+			<pattern>([ \t]+)(?:\/\/[^\n]*TODO\b[^\n]+\n)(\/\/[^\n]+)?\n?((\1)(?2)\n)*</pattern>
+			<style>
+				<entry key="color" value="rgb(50, 150, 0)" />
+				<entry key="font-style" value="italic" />
+				<entry key="font-weight" value="bold" />
+			</style>
+		</rule>
+		<rule name="single-line-comment">
+			<pattern>//[^\n]+</pattern>
+			<style>
+			    <entry key="color" value="rgb(0, 110, 10)" />
+                <entry key="font-style" value="italic" />
+			</style>
+		</rule>
+		<rule name="javadoc-comment">
+			<pattern>/[*]{2}(?:.|\n)+?\*/</pattern>
+			<style>
+			    <entry key="color" value="rgb(0, 100, 120)" />
+                <entry key="font-style" value="italic" />
+			</style>
+			<subrules>
+				<rule name="link-reference">
+					<pattern>(?&lt;=\{\@link)\s+\S+?[\s\S]*?(?=})</pattern>
+					<style>
+						<entry key="color" value="rgb(60, 60, 20)" />
+					</style>
+				</rule>
+			    <rule name="field">
+                	<pattern>\B(?:@[\w]+)\b</pattern>
+                	<style>
+                	    <entry key="font-weight" value="bold" />
+                	</style>
+                </rule>
+                <rule name="param-name">
+                 	<pattern>(?&lt;=@param)\s+\b(?:\w+)\b</pattern>
+                 	<style>
+                 	     <entry key="color" value="rgb(0, 50, 60)" />
+                 	</style>
+                </rule>
+			</subrules>
+		</rule>
+		<rule name="multi-line-comment">
+			<pattern>/[*](?:.|\n)+?\*/</pattern>
+			<style>
+			    <entry key="color" value="rgb(0, 110, 10)" />
+                <entry key="font-style" value="italic" />
+			</style>
+		</rule>
+	</language>
+	<language name="Css">
+		<rule name="comment">
+			<pattern>/[*]+(.|\n)+?\*/</pattern>
+			<style>
+                <entry key="color" value="rgb(0, 111, 10)" />
+                <entry key="font-style" value="italic" />
+            </style>
+		</rule>
+		<rule name="attribute">
+			<pattern>(?!\s+)[\w-]+(?=:)(?=.*;|.\s)</pattern>
+			<style>
+			    <entry key="color" value="rgb(127, 0, 85)" />
+			</style>
+		</rule>
+		<rule name="string">
+			<pattern>(\"(?:[^"\\]|\\.)*?\")|(\'(?:[^'\\]|\\.)*?\')</pattern>
+			<style>
+                <entry key="color" value="rgb(50, 100, 30)" />
+                <entry key="font-weight" value="italic" />
+            </style>
+		</rule>
+		<rule name="at-rule">
+			<pattern>@\w+</pattern>
+			<style>
+			    <entry key="color" value="rgb(60, 80, 120)" />
+			</style>
+		</rule>
+		<rule name="rule">
+			<pattern>[#.\-:\w]+(?=[\w\s\-:.,]*\{)</pattern>
+			<style>
+			    <entry key="color" value="rgb(0, 55, 100)" />
+                <entry key="font-weight" value="bold" />
+			</style>
+		</rule>
+		<rule name="numeric-constant">
+			<pattern>[\d.]+px|[\d.]+%|[\d.]+em|[\d.]+deg|#\w+|\d+</pattern>
+			<style>
+			    <entry key="color" value="rgb(170, 50, 0)" />
+			</style>
+		</rule>
+		<rule name="keywords">
+			<pattern>\b(auto|rgb|rgba|transparent|visible|hidden|nowrap|left|right|center|justify|static|relative|fixed|absolute|sticky|block|inline|inline-block|none|initial|inherit|border-box|contain|repeat|no-repeat|repeat-x|repeat-y|italic|bold|oblique|dotted|dashed|solid|double|groove|ridge|inset|outset|none|hidden|black|silver|gray|white|maroon|red|purple|fuchsia|green|lime|olive|yellow|navy|blue|teal|aqua|antiquewhite|aquamarine|azure|beige|bisque|blanchedalmond|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkgrey|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkslategrey|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dimgrey|dodgerblue|firebrick|floralwhite|forestgreen|gainsboro|ghostwhite|gold|goldenrod|greenyellow|grey|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgreen|lightgrey|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightslategrey|lightsteelblue|lightyellow|limegreen|linen|magenta|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|oldlace|olivedrab|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|skyblue|slateblue|slategray|slategrey|snow|springgreen|steelblue|tan|thistle|tomato|turquoise|violet|wheat|whitesmoke|yellowgreen)\b</pattern>
+		    <style>
+		        <entry key="color" value="rgb(173, 53, 0)" />
+		    </style>
+		</rule>
+	</language>
+</configuration>
