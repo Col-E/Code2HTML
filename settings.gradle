@@ -1,0 +1,6 @@
+buildCache {
+    local {
+        enabled = true
+        directory = new File('build/cache')
+    }
+}
