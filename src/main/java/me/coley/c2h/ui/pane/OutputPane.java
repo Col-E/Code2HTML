@@ -142,6 +142,7 @@ public class OutputPane extends BorderPane implements ConfigUpdateListener, Inpu
 	@Override
 	public void onTargetLanguageSet(Language language) {
 		targetLanguage = language;
+		updateOutput();
 	}
 
 	@Override

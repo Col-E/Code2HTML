@@ -15,6 +15,7 @@ import me.coley.c2h.util.Regex;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Configuration pane for modifying contents of a {@link Language}.
@@ -22,18 +23,18 @@ import java.util.function.Consumer;
  * @author Matt Coley
  */
 class LanguagePane extends BorderPane {
-	private final ConfigUpdateListener listener;
+	private final Supplier<ConfigUpdateListener> listenerProxy;
 	private final Language language;
 
 	/**
 	 * @param language
 	 * 		Target language.
-	 * @param listener
-	 * 		Listener to call when changes are made.
+	 * @param listenerProxy
+	 * 		Proxy to listener to call when changes are made.
 	 */
-	public LanguagePane(Language language, ConfigUpdateListener listener) {
+	public LanguagePane(Language language, Supplier<ConfigUpdateListener> listenerProxy) {
 		this.language = language;
-		this.listener = listener;
+		this.listenerProxy = listenerProxy;
 
 		// TODO:
 		//  - rule
@@ -59,7 +60,7 @@ class LanguagePane extends BorderPane {
 	}
 
 	private void notifyChange() {
-		listener.onTargetLanguageSet(language);
+		listenerProxy.get().onTargetLanguageSet(language);
 	}
 
 	private void visit(Consumer<RulePane> placer, Rule rule) {

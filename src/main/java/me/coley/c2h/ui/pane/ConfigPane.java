@@ -37,7 +37,7 @@ public class ConfigPane extends BorderPane {
 			if (cur == null) {
 				setCenter(null);
 			} else {
-				setCenter(new LanguagePane(cur, listener));
+				setCenter(new LanguagePane(cur, () -> listener));
 			}
 
 			refreshMenu();
