@@ -19,6 +19,19 @@ public class StyleProperty {
 	@XmlElement(name = "entry")
 	private List<StyleProperty> style;
 
+	public StyleProperty() {}
+
+	/**
+	 * @param key
+	 * 		CSS property key.
+	 * @param value
+	 * 		CSS property value.
+	 */
+	public StyleProperty(String key, String value) {
+		this.key = key;
+		this.value = value;
+	}
+
 	/**
 	 * @return CSS property key.
 	 */

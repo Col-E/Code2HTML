@@ -67,6 +67,14 @@ public class Language implements Comparable<Language> {
 		return name;
 	}
 
+	/**
+	 * @param name
+	 * 		Language identifier.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	@Override
 	public int compareTo(Language other) {
 		return getName().toLowerCase().compareTo(other.getName().toLowerCase());

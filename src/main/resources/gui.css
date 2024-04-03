@@ -67,6 +67,11 @@
     -fx-background-color: transparent;
     -fx-padding: 10px;
 }
+.input {
+    -fx-background-color: -fx-bg-dark;
+    -fx-border-color: -fx-bg-darker;
+    -fx-border-width: 1px;
+}
 
 /* ========== Buttons ======================== */
 /* ========== Buttons ======================== */
@@ -142,6 +147,12 @@
 }
 
 /* ========== Misc ======================== */
+.h1 {
+    -fx-font-size: 24px;
+}
+.h2 {
+    -fx-font-size: 17px;
+}
 .pattern {
     -fx-font-family: monospace;
 }

@@ -104,4 +104,19 @@ public class Regex {
 	public static Pattern patternOf(String pattern) {
 		return patternCache.computeIfAbsent(pattern, Pattern::compile);
 	}
+
+	/**
+	 * @param pattern
+	 * 		Pattern text.
+	 *
+	 * @return {@code true} when valid.
+	 */
+	public static boolean isValid(String pattern) {
+		try {
+			Pattern.compile(pattern);
+			return true;
+		} catch (Throwable t) {
+			return false;
+		}
+	}
 }
