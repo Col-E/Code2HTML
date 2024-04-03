@@ -1,24 +1,161 @@
-/* Labels have margins of about 13px */
-.tab-large { -fx-pref-width: 123px; }
-.tab-large > .tab-container > .tab-label {
-	-fx-alignment: CENTER;
-	-fx-pref-width: 110px;
-	-fx-text-fill: -fx-text-base-color;
+/* root, used to define colors */
+* {
+    -fx-base: rgb(255, 255, 255);
+    -fx-dark-text-color: rgb(0, 0, 0);
+    -fx-mid-text-color: rgb(0, 0, 0);
+    -fx-light-text-color: rgb(0, 0, 0);
+    -fx-accent-base: transparent;
+    -fx-accent-light: transparent;
+    -fx-accent-lighter: transparent;
+    -fx-accent: transparent;
+    -fx-focus-color: transparent;
+    -fx-bg: rgb(255, 255, 255);
+    -fx-bg-dark: rgb(230, 230, 230);
+    -fx-bg-darker: rgb(200, 200, 200);
 }
-.tab-small { -fx-pref-width: 73px; }
-.tab-small > .tab-container > .tab-label {
-	-fx-alignment: CENTER;
-	-fx-pref-width: 60px;
-	-fx-text-fill: -fx-text-base-color;
+
+/* ========== Tabs ======================== */
+.tab-pane {
+    -fx-tab-min-width: 100px;
+    -fx-border-width: 0;
 }
-.title {
-	-fx-font-family: Arial;
-	-fx-font-weight: bold;
+.tab-header-area {
+    -fx-padding: 0;
+    -fx-border-width: 0;
+}
+.tab-header-background {
+    -fx-background-color: -fx-bg-dark;
+    -fx-border-width: 0;
+}
+.tab {
+    -fx-background-color: -fx-bg-dark;
+    -fx-background-radius: 0;
+    -fx-background-insets: -1;
+    -fx-padding: 0px;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 35px;
+}
+.tab:selected {
+     -fx-background-color: -fx-bg;
+     -fx-border-color: transparent !IMPORTANT;
+     -fx-border-width: 0;
+}
+.tab > .tab-container {
+    -fx-padding: 0px;
+}
+.tab > .tab-container > .tab-label {
+    -fx-text-fill: -fx-text-base-color;
+    -fx-pref-width: 150px;
+}
+
+/* We don't want a focus indicator, we're using the border, and that's it */
+.tab:selected .focus-indicator {
+    -fx-border-color: transparent;
+}
+
+/* ========== Text ======================== */
+.text-field,
+.text-area {
+    -fx-highlight-fill: rgba(150, 200, 255, 0.5);
+    -fx-highlight-text-fill: black;
+    -fx-border-width: 0px;
+    -fx-background-radius: 0px;
+    -fx-background-insets: 0;
+    -fx-background-color: -fx-bg;
+}
+.text-area .content {
+    -fx-background-color: transparent;
+    -fx-padding: 10px;
+}
+.input {
+    -fx-background-color: -fx-bg-dark;
+    -fx-border-color: -fx-bg-darker;
+    -fx-border-width: 1px;
+}
+
+/* ========== Buttons ======================== */
+/* ========== Buttons ======================== */
+.check-box > .box,
+.radio-button > .radio,
+.button {
+    -fx-border-width: 0px;
+    -fx-border-color: transparent;
+    -fx-border-radius: 2px;
+    -fx-background-radius: 2px;
+    -fx-background-color: -fx-bg-dark;
+}
+.check-box:hover > .box,
+.radio-button:hover > .radio,
+.button:hover {
+    -fx-background-color: -fx-bg-darker;
+}
+.check-box > .box,
+.radio-button > .radio {
+    -fx-background-color: -fx-bg-dark;
+}
+.radio-button > .radio {
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+}
+.button:pressed {
+    -fx-background-color: -fx-bg-darker;
+}
+
+/* ========== Scrollbar ======================== */
+.scroll-bar .track {
+    -fx-background-color: -fx-bg;
+    -fx-background-radius: 0;
+}
+.scroll-bar .thumb {
+    -fx-background-color: -fx-bg-darker;
+    -fx-background-radius: 0;
+}
+.scroll-bar .thumb:hover,
+.scroll-bar .thumb:pressed {
+    -fx-background-color: -fx-bg-dark;
+}
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+.scroll-bar .increment-button:hover,
+.scroll-bar .decrement-button:hover {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+.scroll-bar .increment-button .increment-arrow,
+.scroll-bar .decrement-button .decrement-arrow,
+.scroll-bar .increment-button:hover .increment-arrow,
+.scroll-bar .decrement-button:hover .decrement-arrow {
+    -fx-background-color: -fx-bg-darker;
+}
+
+/* ========== Layouts ======================== */
+.split-pane {
+    -fx-padding: 0px;
+    -fx-box-border: transparent;
+}
+.split-pane:horizontal > .split-pane-divider {
+     -fx-background-color: -fx-bg-dark;
+}
+.split-pane:vertical > .split-pane-divider {
+     -fx-background-color: -fx-bg-dark;
+}
+.options-pane {
+    -fx-padding: 5px;
+}
+
+/* ========== Misc ======================== */
+.h1 {
+    -fx-font-size: 24px;
+}
+.h2 {
+    -fx-font-size: 17px;
 }
 .pattern {
-	-fx-font-family: monospace;
+    -fx-font-family: monospace;
 }
-.button {
-	-fx-pref-width: 120px;
-	-fx-padding: 5px;
+.mono {
+    -fx-font-family: monospace;
 }

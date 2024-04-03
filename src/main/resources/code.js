@@ -1,7 +1,4 @@
-/**
- * When the window loads, insert collapse buttons.
- */
-window.onload = function() {
+function setup() {
 	// Iterate code blocks:
 	var codeBlocks = document.getElementsByTagName("pre");
 	for (var i = 0; i < codeBlocks.length; i++) {
@@ -122,3 +119,8 @@ function collapse(button, container, id) {
 function isEmpty(str) {
 	return (!str || 0 === str.length);
 }
+
+// When the window loads, insert collapse buttons.
+window.onload = function() {
+    setup();
+};

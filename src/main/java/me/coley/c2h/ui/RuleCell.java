@@ -8,13 +8,16 @@ import me.coley.c2h.config.model.Rule;
 /**
  * ListCell for displaying language rules.
  *
- * @author Matt
+ * @author Matt Coley
  */
 public final class RuleCell extends ListCell<Rule> {
 	@Override
 	protected void updateItem(Rule item, boolean empty) {
+		// TODO: Re-add this to the config menu
+		//  - likely as a tree-cell since rules can be hierarchies now
+
 		super.updateItem(item, empty);
-		if(empty || item == null) {
+		if (empty || item == null) {
 			setGraphic(null);
 			setText(null);
 		} else {

@@ -1,0 +1,77 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+group 'software.coley'
+version '4.0.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+def javaFxVersion = '22-ea+28'
+def javaFxIncludeInDist = System.getProperty('skip.jfx.bundle') == null
+
+javafx {
+    version = javaFxVersion
+    modules = ['javafx.controls', 'javafx.web']
+}
+
+dependencies {
+    implementation 'org.apache.commons:commons-text:1.11.0'
+    implementation 'com.github.florianingerl.util:regex:1.1.9'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'javax.activation:activation:1.1.1'
+    implementation 'com.sun.xml.bind:jaxb-impl:2.3.4'
+    implementation 'com.github.Col-E:tiwulfx-dock:1.2.3'
+    implementation 'info.picocli:picocli:4.7.5'
+    implementation 'fr.brouillard.oss:cssfx:11.5.1'
+    implementation 'org.openjfx:javafx-web:21'
+    implementation 'ch.qos.logback:logback-classic:1.4.14'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+}
+
+// https://docs.gradle.org/current/userguide/toolchains.html
+// gradlew -q javaToolchains - see the list of detected toolchains.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// Append options for unchecked/deprecation
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        options.encoding = 'UTF-8'
+        options.incremental = true
+    }
+}
+
+// All modules should have the same test framework setup.
+test {
+    useJUnitPlatform()
+
+    systemProperty 'junit.jupiter.execution.parallel.enabled', true
+    systemProperty 'junit.jupiter.execution.parallel.mode.default', 'concurrent'
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+application {
+    mainClass = 'me.coley.c2h.Code2Html'
+}
+
+shadowJar {
+    dependencies {
+        exclude(dependency(javaFxIncludeInDist ? 'invalid:invalid:invalid' : 'org.openjfx:.*:.*'))
+    }
+}

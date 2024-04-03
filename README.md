@@ -1,33 +1,24 @@
 # Code2HTML
 
-A JavaFX app for converting user specified languages to HTML. Paste source code into the top-left panel and the HTML will show in the top-right, with a preview at the bottom.
-The CSS and _optional JS_ are available in the other tabs in the top-right. Updating the CSS and JS will display live updates in the preview area.
+A JavaFX app for converting user specified languages to HTML.
 
-### Top-Left tabs:
+**Requirements**
 
-* **HTML**: The HTML output.
-* **CSS**: The CSS code that styles the HTML span tags.
-* **JS**: Optional JS for manual inclusion of collapse-sections.
-* **Patterns**: List of Regex groups for the currently loaded language. 
-
-While the JS is not necessary it allows you to make portions of the code collapseable.
-
-## Download
-
-See the [releases](https://github.com/Col-E/Code2HTML/releases) page for the latest build. Or compile with maven via `mvn package`
-
-**Note**: Builds are based off of Java 8. Running on later versions will not work, please see [the update guide](UPDATING-JDK.md) for more information.
+- Versions `4.X.X` and beyond require Java 17 to run _(JavaFX bundled)_
+- Versions `3.X.X` and below require Java 8 to run _(JavaFX not bundled)_
 
 ## Screenshots
 
 * ![Main View](ss-html.png)
 * ![Config View](ss-config.png)
 
+## Download
+
+See the [releases](https://github.com/Col-E/Code2HTML/releases) page for the latest build. Or compile with maven via `mvn package`
+
 ## Libraries used:
 
-* [Apache Commons IO](https://commons.apache.org/proper/commons-io/)
-* [Apache Commons Text](https://commons.apache.org/proper/commons-text/)
-* [ControlsFX](https://github.com/controlsfx/controlsfx)
-* [JRegex](http://jregex.sourceforge.net/)
-* [picocli](https://picocli.info/)
-* [Lombok](https://projectlombok.org/)
+* [Apache Commons Text](https://commons.apache.org/proper/commons-text/) - HTML escaping
+* [Florian Ingerl's Regex](https://github.com/florianingerl/com.florianingerl.util.regex) - Drop in `java.util.regex` replacement that allows for `(?N)` recursion _(Also GPLv2)_
+* [JavaFX](https://openjfx.io/) - UI
+* [picocli](https://picocli.info/) - CLI
